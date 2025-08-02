@@ -1,0 +1,34 @@
+env: local
+db:
+  user: postgres
+  password: postgres
+  host: localhost
+  port: 5433
+  dbName: payment_db
+  enableSsl: false
+  autoMigrate: true
+
+server:
+  name: "payment-service"
+  port: 8081
+
+messagequeue:
+  host: localhost:9093
+  topic: payment_process_request
+  consumerGroup: payment-service-payment-process-request
+  retry: 5
+  autoCreateTopic: true
+
+processPaymentRequest:
+  host: localhost:9093
+  topic: payment_process_request
+  consumerGroup: payment-service-payment-process-request
+  retry: 5
+  autoCreateTopic: true
+
+processPaymentResponse:
+  host: localhost:9093
+  topic: payment_process_response
+  consumerGroup: payment-service-payment-process-response
+  retry: 5
+  autoCreateTopic: true

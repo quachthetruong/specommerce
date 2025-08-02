@@ -16,9 +16,9 @@ services:
     image: docker.io/bitnami/postgresql:14
     container_name: payment-db
     environment:
-      - POSTGRESQL_DATABASE= payment_db
-      - POSTGRESQL_USERNAME= postgres
-      - POSTGRESQL_PASSWORD= postgres
+      - POSTGRESQL_DATABASE=payment_db
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
     ports:
       - "5433:5432"
     volumes:

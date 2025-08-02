@@ -1,0 +1,80 @@
+basePath: /api
+definitions:
+  handler.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+    type: object
+  handler.PaymentResponse:
+    properties:
+      created_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      customer_id:
+        example: customer123
+        type: string
+      id:
+        example: abc123
+        type: string
+      method:
+        example: credit_card
+        type: string
+      order_id:
+        example: order123
+        type: string
+      status:
+        example: COMPLETED
+        type: string
+      total_amount:
+        example: 99.99
+        type: number
+      updated_at:
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+host: localhost:8081
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: Payment Service API for processing payments
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Payment Service API
+  version: "1.0"
+paths:
+  /admin/v1/payments:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all payments from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of payments
+          schema:
+            items:
+              $ref: '#/definitions/handler.PaymentResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get all payments
+      tags:
+      - payments
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
