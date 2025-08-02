@@ -43,7 +43,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/order.OrderResponse"
+                                "$ref": "#/definitions/handler.OrderResponse"
                             }
                         }
                     },
@@ -76,7 +76,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/order.CreateOrderRequest"
+                            "$ref": "#/definitions/handler.CreateOrderRequest"
                         }
                     }
                 ],
@@ -84,7 +84,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Order created successfully",
                         "schema": {
-                            "$ref": "#/definitions/order.OrderResponse"
+                            "$ref": "#/definitions/handler.OrderResponse"
                         }
                     },
                     "400": {
@@ -104,18 +104,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handler.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "order.CreateOrderRequest": {
+        "handler.CreateOrderRequest": {
             "type": "object",
             "required": [
                 "customer_id",
@@ -130,7 +119,18 @@ const docTemplate = `{
                 }
             }
         },
-        "order.OrderResponse": {
+        "handler.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.OrderResponse": {
             "type": "object",
             "properties": {
                 "created_at": {

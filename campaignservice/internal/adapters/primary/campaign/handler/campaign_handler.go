@@ -30,7 +30,7 @@ func NewCampaignHandler(campaignService primary.CampaignService) CampaignHandler
 // @Accept json
 // @Produce json
 // @Param campaign body CreateCampaignRequest true "Campaign information"
-// @Success 200 {object} CampaignResponse "Campaign created successfully"
+// @Success 200 {object} campaign.Campaign "Campaign created successfully"
 // @Failure 400 {object} handler.ErrorResponse "Bad request"
 // @Failure 500 {object} handler.ErrorResponse "Internal server error"
 // @Router /v1/campaigns [post]

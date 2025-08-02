@@ -56,7 +56,30 @@ func (s *service) CreateOrder(ctx context.Context, input order.Order) (order.Ord
 
 }
 
-// GetAllOrders retrieves all orders
+func (s *service) ProcessPaymentResponse(ctx context.Context, input payment.ProcessPaymentResponse) (order.Order, error) {
+	errTemplate := "paymentService ProcessPaymentResponse %w"
+	orderResponse := order.Order{}
+	txErr := s.atomicExecutor.Execute(
+		ctx, func(tc context.Context) error {
+			newStatus := order.OrderStatusSuccess
+			if input.PaymentStatus == payment.PaymentStatusFailed {
+				newStatus = order.OrderStatusFailed
+			}
+			updatedOrder, err := s.orderRepo.UpdateStatusById(ctx, input.OrderId, newStatus)
+			if err != nil {
+				return err
+			}
+			orderResponse = updatedOrder
+			return nil
+		},
+	)
+	if txErr != nil {
+		return order.Order{}, fmt.Errorf(errTemplate, txErr)
+	}
+
+	return orderResponse, nil
+}
+
 func (s *service) GetAllOrders(ctx context.Context) ([]order.Order, error) {
 	return s.orderRepo.GetAll(ctx)
 }

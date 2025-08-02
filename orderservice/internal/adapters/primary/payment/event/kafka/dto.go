@@ -6,8 +6,8 @@ import (
 
 func ToDomainPaymentStatus(status string) payment.PaymentStatus {
 	switch status {
-	case "COMPLETED":
-		return payment.PaymentStatusCompleted
+	case "SUCCESS":
+		return payment.PaymentStatusSuccess
 	case "FAILED":
 		return payment.PaymentStatusFailed
 	default:

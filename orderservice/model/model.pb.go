@@ -9,6 +9,7 @@ package model
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -166,11 +167,103 @@ func (x *ProcessPaymentResponse) GetPaymentStatus() string {
 	return ""
 }
 
+type Order struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	CustomerId    string                 `protobuf:"bytes,2,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
+	CustomerName  string                 `protobuf:"bytes,3,opt,name=customer_name,json=customerName,proto3" json:"customer_name,omitempty"`
+	TotalAmount   float64                `protobuf:"fixed64,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Order) Reset() {
+	*x = Order{}
+	mi := &file_model_model_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Order) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Order) ProtoMessage() {}
+
+func (x *Order) ProtoReflect() protoreflect.Message {
+	mi := &file_model_model_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Order.ProtoReflect.Descriptor instead.
+func (*Order) Descriptor() ([]byte, []int) {
+	return file_model_model_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Order) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Order) GetCustomerId() string {
+	if x != nil {
+		return x.CustomerId
+	}
+	return ""
+}
+
+func (x *Order) GetCustomerName() string {
+	if x != nil {
+		return x.CustomerName
+	}
+	return ""
+}
+
+func (x *Order) GetTotalAmount() float64 {
+	if x != nil {
+		return x.TotalAmount
+	}
+	return 0
+}
+
+func (x *Order) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *Order) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Order) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
 var File_model_model_proto protoreflect.FileDescriptor
 
 const file_model_model_proto_rawDesc = "" +
 	"\n" +
-	"\x11model/model.proto\x12\x05kafka\"v\n" +
+	"\x11model/model.proto\x12\x05kafka\x1a\x1fgoogle/protobuf/timestamp.proto\"v\n" +
 	"\x15ProcessPaymentRequest\x12\x19\n" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12\x1f\n" +
 	"\vcustomer_id\x18\x02 \x01(\tR\n" +
@@ -183,7 +276,18 @@ const file_model_model_proto_rawDesc = "" +
 	"\vcustomer_id\x18\x03 \x01(\tR\n" +
 	"customerId\x12!\n" +
 	"\ftotal_amount\x18\x04 \x01(\x01R\vtotalAmount\x12%\n" +
-	"\x0epayment_status\x18\x05 \x01(\tR\rpaymentStatusB Z\x1especommerce/orderservice/modelb\x06proto3"
+	"\x0epayment_status\x18\x05 \x01(\tR\rpaymentStatus\"\x8e\x02\n" +
+	"\x05Order\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
+	"\vcustomer_id\x18\x02 \x01(\tR\n" +
+	"customerId\x12#\n" +
+	"\rcustomer_name\x18\x03 \x01(\tR\fcustomerName\x12!\n" +
+	"\ftotal_amount\x18\x04 \x01(\x01R\vtotalAmount\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB Z\x1especommerce/orderservice/modelb\x06proto3"
 
 var (
 	file_model_model_proto_rawDescOnce sync.Once
@@ -197,17 +301,21 @@ func file_model_model_proto_rawDescGZIP() []byte {
 	return file_model_model_proto_rawDescData
 }
 
-var file_model_model_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_model_model_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_model_model_proto_goTypes = []any{
 	(*ProcessPaymentRequest)(nil),  // 0: kafka.ProcessPaymentRequest
 	(*ProcessPaymentResponse)(nil), // 1: kafka.ProcessPaymentResponse
+	(*Order)(nil),                  // 2: kafka.Order
+	(*timestamppb.Timestamp)(nil),  // 3: google.protobuf.Timestamp
 }
 var file_model_model_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3, // 0: kafka.Order.created_at:type_name -> google.protobuf.Timestamp
+	3, // 1: kafka.Order.updated_at:type_name -> google.protobuf.Timestamp
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_model_model_proto_init() }
@@ -221,7 +329,7 @@ func file_model_model_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_model_model_proto_rawDesc), len(file_model_model_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

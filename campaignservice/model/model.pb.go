@@ -24,32 +24,33 @@ const (
 
 // ProcessPaymentRequest represents a request to process payment for an order
 // Contains the same information as domain Order
-type OrderCompleted struct {
+type Order struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	CustomerId    string                 `protobuf:"bytes,2,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
-	TotalAmount   float64                `protobuf:"fixed64,3,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
-	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	CustomerName  string                 `protobuf:"bytes,3,opt,name=customer_name,json=customerName,proto3" json:"customer_name,omitempty"`
+	TotalAmount   float64                `protobuf:"fixed64,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *OrderCompleted) Reset() {
-	*x = OrderCompleted{}
+func (x *Order) Reset() {
+	*x = Order{}
 	mi := &file_model_model_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *OrderCompleted) String() string {
+func (x *Order) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*OrderCompleted) ProtoMessage() {}
+func (*Order) ProtoMessage() {}
 
-func (x *OrderCompleted) ProtoReflect() protoreflect.Message {
+func (x *Order) ProtoReflect() protoreflect.Message {
 	mi := &file_model_model_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -61,47 +62,54 @@ func (x *OrderCompleted) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use OrderCompleted.ProtoReflect.Descriptor instead.
-func (*OrderCompleted) Descriptor() ([]byte, []int) {
+// Deprecated: Use Order.ProtoReflect.Descriptor instead.
+func (*Order) Descriptor() ([]byte, []int) {
 	return file_model_model_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *OrderCompleted) GetId() string {
+func (x *Order) GetId() string {
 	if x != nil {
 		return x.Id
 	}
 	return ""
 }
 
-func (x *OrderCompleted) GetCustomerId() string {
+func (x *Order) GetCustomerId() string {
 	if x != nil {
 		return x.CustomerId
 	}
 	return ""
 }
 
-func (x *OrderCompleted) GetTotalAmount() float64 {
+func (x *Order) GetCustomerName() string {
+	if x != nil {
+		return x.CustomerName
+	}
+	return ""
+}
+
+func (x *Order) GetTotalAmount() float64 {
 	if x != nil {
 		return x.TotalAmount
 	}
 	return 0
 }
 
-func (x *OrderCompleted) GetStatus() string {
+func (x *Order) GetStatus() string {
 	if x != nil {
 		return x.Status
 	}
 	return ""
 }
 
-func (x *OrderCompleted) GetCreatedAt() *timestamppb.Timestamp {
+func (x *Order) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
 	}
 	return nil
 }
 
-func (x *OrderCompleted) GetUpdatedAt() *timestamppb.Timestamp {
+func (x *Order) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.UpdatedAt
 	}
@@ -112,17 +120,18 @@ var File_model_model_proto protoreflect.FileDescriptor
 
 const file_model_model_proto_rawDesc = "" +
 	"\n" +
-	"\x11model/model.proto\x12\x05kafka\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf2\x01\n" +
-	"\x0eOrderCompleted\x12\x0e\n" +
+	"\x11model/model.proto\x12\x05kafka\x1a\x1fgoogle/protobuf/timestamp.proto\"\x8e\x02\n" +
+	"\x05Order\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1f\n" +
 	"\vcustomer_id\x18\x02 \x01(\tR\n" +
-	"customerId\x12!\n" +
-	"\ftotal_amount\x18\x03 \x01(\x01R\vtotalAmount\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\tR\x06status\x129\n" +
+	"customerId\x12#\n" +
+	"\rcustomer_name\x18\x03 \x01(\tR\fcustomerName\x12!\n" +
+	"\ftotal_amount\x18\x04 \x01(\x01R\vtotalAmount\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x129\n" +
 	"\n" +
-	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB#Z!specommerce/campaignservice/modelb\x06proto3"
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB#Z!specommerce/campaignservice/modelb\x06proto3"
 
 var (
 	file_model_model_proto_rawDescOnce sync.Once
@@ -138,12 +147,12 @@ func file_model_model_proto_rawDescGZIP() []byte {
 
 var file_model_model_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_model_model_proto_goTypes = []any{
-	(*OrderCompleted)(nil),        // 0: kafka.OrderCompleted
+	(*Order)(nil),                 // 0: kafka.Order
 	(*timestamppb.Timestamp)(nil), // 1: google.protobuf.Timestamp
 }
 var file_model_model_proto_depIdxs = []int32{
-	1, // 0: kafka.OrderCompleted.created_at:type_name -> google.protobuf.Timestamp
-	1, // 1: kafka.OrderCompleted.updated_at:type_name -> google.protobuf.Timestamp
+	1, // 0: kafka.Order.created_at:type_name -> google.protobuf.Timestamp
+	1, // 1: kafka.Order.updated_at:type_name -> google.protobuf.Timestamp
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

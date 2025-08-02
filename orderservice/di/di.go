@@ -11,7 +11,6 @@ import (
 	"specommerce/orderservice/internal/core/ports/primary"
 	"specommerce/orderservice/internal/core/ports/secondary"
 	orderService "specommerce/orderservice/internal/core/services/order"
-	paymentService "specommerce/orderservice/internal/core/services/payment"
 	"specommerce/orderservice/pkg/atomicity"
 	"specommerce/orderservice/pkg/database"
 	"specommerce/orderservice/pkg/messagequeue"
@@ -24,7 +23,6 @@ func NewInjector() do.Injector {
 	do.Provide(injector, NewOrderService)
 	do.Provide(injector, NewOrderHandler)
 
-	do.Provide(injector, NewPaymentService)
 	do.Provide(injector, NewPaymentPublisher)
 	do.Provide(injector, NewPublisher)
 	do.Provide(injector, NewProcessPaymentResponseConsumer)
@@ -46,15 +44,6 @@ func NewOrderService(injector do.Injector) (primary.OrderService, error) {
 	return orderService.NewOrderService(
 		orderRepository,
 		paymentPublisher,
-		atomicExecutor,
-	), nil
-}
-
-func NewPaymentService(injector do.Injector) (primary.PaymentService, error) {
-	orderRepository := do.MustInvoke[secondary.OrderRepository](injector)
-	atomicExecutor := do.MustInvoke[atomicity.AtomicExecutor](injector)
-	return paymentService.NewPaymentService(
-		orderRepository,
 		atomicExecutor,
 	), nil
 }
@@ -84,7 +73,7 @@ func NewBaseEventListener(injector do.Injector) (*messagequeue.BaseEventListener
 
 func NewProcessPaymentResponseConsumer(injector do.Injector) (*paymentConsumer.ProcessPaymentResponseConsumer, error) {
 	cfg := do.MustInvoke[config.AppConfig](injector)
-	paymentService := do.MustInvoke[primary.PaymentService](injector)
+	orderService := do.MustInvoke[primary.OrderService](injector)
 	baseEventListener := do.MustInvoke[*messagequeue.BaseEventListener](injector)
-	return paymentConsumer.NewProcessPaymentResponseConsumer(baseEventListener, cfg.ProcessPaymentResponse, paymentService), nil
+	return paymentConsumer.NewProcessPaymentResponseConsumer(baseEventListener, cfg.ProcessPaymentResponse, orderService), nil
 }

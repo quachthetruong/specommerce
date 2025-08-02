@@ -1,7 +1,7 @@
 create type order_status as enum (
     'PENDING',
     'PROCESSING',
-    'COMPLETED',
+    'SUCCESS',
     'FAILED'
 );
 
@@ -10,6 +10,7 @@ create table orders (
     status order_status not null default 'PENDING',
     total_amount decimal(10, 2) not null,
     customer_id varchar(20) not null,
+    customer_name varchar(100) not null,
     created_at timestamp with time zone not null default now(),
     updated_at timestamp with time zone not null default now()
 );

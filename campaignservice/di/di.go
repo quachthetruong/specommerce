@@ -32,7 +32,7 @@ func NewInjector() do.Injector {
 
 	// Messaging dependencies
 	do.Provide(injector, NewPublisher)
-	do.Provide(injector, NewOrderCompletedConsumer)
+	do.Provide(injector, NewOrderSuccessConsumer)
 
 	// Base infrastructure
 	do.Provide(injector, NewBaseEventListener)
@@ -87,9 +87,9 @@ func NewBaseEventListener(injector do.Injector) (*messagequeue.BaseEventListener
 	return messagequeue.NewBaseEventListener(tasks, logger), nil
 }
 
-func NewOrderCompletedConsumer(injector do.Injector) (*orderConsumer.OrderCompletedConsumer, error) {
+func NewOrderSuccessConsumer(injector do.Injector) (*orderConsumer.OrderSuccessConsumer, error) {
 	cfg := do.MustInvoke[config.AppConfig](injector)
 	orderService := do.MustInvoke[primary.OrderService](injector)
 	baseEventListener := do.MustInvoke[*messagequeue.BaseEventListener](injector)
-	return orderConsumer.NewOrderCompletedConsumer(baseEventListener, cfg.OrderComplete, orderService), nil
+	return orderConsumer.NewOrderSuccessConsumer(baseEventListener, cfg.OrderSuccess, orderService), nil
 }

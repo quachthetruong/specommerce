@@ -1,13 +1,6 @@
 basePath: /api
 definitions:
-  handler.ErrorResponse:
-    properties:
-      code:
-        type: integer
-      error:
-        type: string
-    type: object
-  order.CreateOrderRequest:
+  handler.CreateOrderRequest:
     properties:
       customer_id:
         type: string
@@ -17,7 +10,14 @@ definitions:
     - customer_id
     - total_amount
     type: object
-  order.OrderResponse:
+  handler.ErrorResponse:
+    properties:
+      code:
+        type: integer
+      error:
+        type: string
+    type: object
+  handler.OrderResponse:
     properties:
       created_at:
         example: "2023-01-01T00:00:00Z"
@@ -64,7 +64,7 @@ paths:
           description: List of orders
           schema:
             items:
-              $ref: '#/definitions/order.OrderResponse'
+              $ref: '#/definitions/handler.OrderResponse'
             type: array
         "500":
           description: Internal server error
@@ -84,14 +84,14 @@ paths:
         name: order
         required: true
         schema:
-          $ref: '#/definitions/order.CreateOrderRequest'
+          $ref: '#/definitions/handler.CreateOrderRequest'
       produces:
       - application/json
       responses:
         "200":
           description: Order created successfully
           schema:
-            $ref: '#/definitions/order.OrderResponse'
+            $ref: '#/definitions/handler.OrderResponse'
         "400":
           description: Bad request
           schema:

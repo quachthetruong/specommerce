@@ -18,14 +18,11 @@ definitions:
       id:
         example: abc123
         type: string
-      method:
-        example: credit_card
-        type: string
       order_id:
         example: order123
         type: string
       status:
-        example: COMPLETED
+        example: SUCCESS
         type: string
       total_amount:
         example: 99.99

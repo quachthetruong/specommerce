@@ -7,19 +7,20 @@ import (
 	"specommerce/campaignservice/model"
 )
 
-func ToDomain(event model.OrderCompleted) (domain.Order, error) {
-	errTemplate := "OrderCompletedConsumer.ToDomain: %w"
+func ToDomain(event model.Order) (domain.Order, error) {
+	errTemplate := "OrderSuccessConsumer.ToDomain: %w"
 	orderId, err := xid.FromString(event.Id)
 	if err != nil {
 		return domain.Order{}, fmt.Errorf(errTemplate, err)
 	}
 	return domain.Order{
-		Id:          orderId,
-		CustomerId:  event.CustomerId,
-		TotalAmount: event.TotalAmount,
-		Status:      domain.OrderStatus(event.Status),
-		CreatedAt:   event.CreatedAt.AsTime(),
-		UpdatedAt:   event.UpdatedAt.AsTime(),
+		Id:           orderId,
+		CustomerId:   event.CustomerId,
+		CustomerName: event.CustomerName,
+		TotalAmount:  event.TotalAmount,
+		Status:       domain.OrderStatus(event.Status),
+		CreatedAt:    event.CreatedAt.AsTime(),
+		UpdatedAt:    event.UpdatedAt.AsTime(),
 	}, nil
 
 }

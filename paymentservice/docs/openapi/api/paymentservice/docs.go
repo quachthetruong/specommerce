@@ -84,17 +84,13 @@ const docTemplate = `{
                     "type": "string",
                     "example": "abc123"
                 },
-                "method": {
-                    "type": "string",
-                    "example": "credit_card"
-                },
                 "order_id": {
                     "type": "string",
                     "example": "order123"
                 },
                 "status": {
                     "type": "string",
-                    "example": "COMPLETED"
+                    "example": "SUCCESS"
                 },
                 "total_amount": {
                     "type": "number",

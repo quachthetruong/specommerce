@@ -2,8 +2,8 @@ package kafka
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"google.golang.org/protobuf/proto"
 	"log/slog"
 	"specommerce/campaignservice/internal/core/ports/primary"
 	"specommerce/campaignservice/model"
@@ -13,38 +13,38 @@ import (
 	"specommerce/campaignservice/pkg/service_config"
 )
 
-type OrderCompletedConsumer struct {
+type OrderSuccessConsumer struct {
 	baseListener *messagequeue.BaseEventListener
 	config       service_config.KafkaConfig
 	orderService primary.OrderService
 }
 
-func NewOrderCompletedConsumer(
+func NewOrderSuccessConsumer(
 	baseListener *messagequeue.BaseEventListener,
 	cfg service_config.KafkaConfig,
 	orderService primary.OrderService,
-) *OrderCompletedConsumer {
-	return &OrderCompletedConsumer{
+) *OrderSuccessConsumer {
+	return &OrderSuccessConsumer{
 		baseListener: baseListener,
 		config:       cfg,
 		orderService: orderService,
 	}
 }
 
-func (c *OrderCompletedConsumer) Start() error {
+func (c *OrderSuccessConsumer) Start() error {
 	return c.baseListener.Start(c.config, c.handleEvent)
 }
 
-func (c *OrderCompletedConsumer) handleEvent(message kafka.Message) error {
-	errorTemplate := "OrderCompletedConsumer.handleEvent: %w"
-	c.baseListener.Logger().Info("Received order complete event",
+func (c *OrderSuccessConsumer) handleEvent(message kafka.Message) error {
+	errorTemplate := "OrderSuccessConsumer.handleEvent: %w"
+	c.baseListener.Logger().Info("Received order success event",
 		slog.String("topic", message.Topic),
 		slog.String("key", string(message.Key)),
 	)
 
 	// Parse the order complete event
-	var orderEvent model.OrderCompleted
-	if err := json.Unmarshal(message.Value, &orderEvent); err != nil {
+	var orderEvent model.Order
+	if err := proto.Unmarshal(message.Value, &orderEvent); err != nil {
 		return fmt.Errorf(errorTemplate, err)
 	}
 
@@ -62,7 +62,7 @@ func (c *OrderCompletedConsumer) handleEvent(message kafka.Message) error {
 		return fmt.Errorf(errorTemplate, err)
 	}
 
-	c.baseListener.Logger().Info("Processed order completed event successfully",
+	c.baseListener.Logger().Info("Processed order success event successfully",
 		slog.String("order_id", savedOrder.Id.String()),
 		slog.String("customer_id", domainOrder.CustomerId),
 		slog.Float64("total_amount", domainOrder.TotalAmount),

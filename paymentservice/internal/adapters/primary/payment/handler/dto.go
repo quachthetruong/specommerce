@@ -27,7 +27,7 @@ type PaymentResponse struct {
 	OrderID     string    `json:"order_id" example:"order123"`
 	CustomerID  string    `json:"customer_id" example:"customer123"`
 	TotalAmount float64   `json:"total_amount" example:"99.99"`
-	Status      string    `json:"status" example:"COMPLETED"`
+	Status      string    `json:"status" example:"SUCCESS"`
 	CreatedAt   time.Time `json:"created_at" example:"2023-01-01T00:00:00Z"`
 	UpdatedAt   time.Time `json:"updated_at" example:"2023-01-01T00:00:00Z"`
 }

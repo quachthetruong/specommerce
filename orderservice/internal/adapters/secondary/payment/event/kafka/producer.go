@@ -20,12 +20,11 @@ type paymentPublisher struct {
 func (p *paymentPublisher) SendPaymentRequest(ctx context.Context, input domain.ProcessPaymentRequest) error {
 	errTemplate := "paymentPublisher PublishProcessPaymentRequest failed: %v"
 
-	sellConfirmationMessage := &model.ProcessPaymentRequest{
+	payload, err := proto.Marshal(&model.ProcessPaymentRequest{
 		OrderId:     input.OrderId.String(),
 		TotalAmount: input.TotalAmount,
 		CustomerId:  input.CustomerId,
-	}
-	payload, err := proto.Marshal(sellConfirmationMessage)
+	})
 
 	if err != nil {
 		return fmt.Errorf(errTemplate, err)

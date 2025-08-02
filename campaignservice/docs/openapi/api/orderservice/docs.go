@@ -24,41 +24,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/v1/orders": {
-            "get": {
-                "description": "Retrieve all orders from the system",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "orders"
-                ],
-                "summary": "Get all orders",
-                "responses": {
-                    "200": {
-                        "description": "List of orders",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/order.OrderResponse"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/orders": {
+        "/v1/campaigns": {
             "post": {
-                "description": "Create a new order with the provided details",
+                "description": "Create a new marketing campaign with the provided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -66,25 +34,25 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "orders"
+                    "campaigns"
                 ],
-                "summary": "Create a new order",
+                "summary": "Create a new campaign",
                 "parameters": [
                     {
-                        "description": "Order information",
-                        "name": "order",
+                        "description": "Campaign information",
+                        "name": "campaign",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/order.CreateOrderRequest"
+                            "$ref": "#/definitions/handler.CreateCampaignRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Order created successfully",
+                        "description": "Campaign created successfully",
                         "schema": {
-                            "$ref": "#/definitions/order.OrderResponse"
+                            "$ref": "#/definitions/campaign.Campaign"
                         }
                     },
                     "400": {
@@ -104,6 +72,99 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "campaign.Campaign": {
+            "type": "object",
+            "required": [
+                "created_at",
+                "description",
+                "end_time",
+                "id",
+                "name",
+                "policy",
+                "start_time",
+                "updated_at"
+            ],
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "policy": {
+                    "$ref": "#/definitions/campaign.CampaignPolicy"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "campaign.CampaignPolicy": {
+            "type": "object",
+            "required": [
+                "max_tracked_orders",
+                "min_order_amount",
+                "total_reward"
+            ],
+            "properties": {
+                "max_tracked_orders": {
+                    "type": "integer"
+                },
+                "min_order_amount": {
+                    "type": "integer"
+                },
+                "total_reward": {
+                    "type": "integer"
+                }
+            }
+        },
+        "handler.CreateCampaignRequest": {
+            "type": "object",
+            "required": [
+                "description",
+                "end_time",
+                "max_tracked_orders",
+                "min_order_amount",
+                "name",
+                "start_time",
+                "total_reward"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "end_time": {
+                    "type": "string"
+                },
+                "max_tracked_orders": {
+                    "type": "integer"
+                },
+                "min_order_amount": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "start_time": {
+                    "type": "string"
+                },
+                "total_reward": {
+                    "type": "integer"
+                }
+            }
+        },
         "handler.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -112,50 +173,6 @@ const docTemplate = `{
                 },
                 "error": {
                     "type": "string"
-                }
-            }
-        },
-        "order.CreateOrderRequest": {
-            "type": "object",
-            "required": [
-                "customer_id",
-                "total_amount"
-            ],
-            "properties": {
-                "customer_id": {
-                    "type": "string"
-                },
-                "total_amount": {
-                    "type": "number"
-                }
-            }
-        },
-        "order.OrderResponse": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string",
-                    "example": "2023-01-01T00:00:00Z"
-                },
-                "customer_id": {
-                    "type": "string",
-                    "example": "customer123"
-                },
-                "id": {
-                    "type": "string",
-                    "example": "abc123"
-                },
-                "status": {
-                    "type": "string",
-                    "example": "PENDING"
-                },
-                "total_amount": {
-                    "type": "number",
-                    "example": 99.99
-                },
-                "updated_at": {
-                    "type": "string",
-                    "example": "2023-01-01T00:00:00Z"
                 }
             }
         }

@@ -1,41 +1,76 @@
 basePath: /api
 definitions:
+  campaign.Campaign:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      end_time:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      policy:
+        $ref: '#/definitions/campaign.CampaignPolicy'
+      start_time:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - created_at
+    - description
+    - end_time
+    - id
+    - name
+    - policy
+    - start_time
+    - updated_at
+    type: object
+  campaign.CampaignPolicy:
+    properties:
+      max_tracked_orders:
+        type: integer
+      min_order_amount:
+        type: integer
+      total_reward:
+        type: integer
+    required:
+    - max_tracked_orders
+    - min_order_amount
+    - total_reward
+    type: object
+  handler.CreateCampaignRequest:
+    properties:
+      description:
+        type: string
+      end_time:
+        type: string
+      max_tracked_orders:
+        type: integer
+      min_order_amount:
+        type: integer
+      name:
+        type: string
+      start_time:
+        type: string
+      total_reward:
+        type: integer
+    required:
+    - description
+    - end_time
+    - max_tracked_orders
+    - min_order_amount
+    - name
+    - start_time
+    - total_reward
+    type: object
   handler.ErrorResponse:
     properties:
       code:
         type: integer
       error:
-        type: string
-    type: object
-  order.CreateOrderRequest:
-    properties:
-      customer_id:
-        type: string
-      total_amount:
-        type: number
-    required:
-    - customer_id
-    - total_amount
-    type: object
-  order.OrderResponse:
-    properties:
-      created_at:
-        example: "2023-01-01T00:00:00Z"
-        type: string
-      customer_id:
-        example: customer123
-        type: string
-      id:
-        example: abc123
-        type: string
-      status:
-        example: PENDING
-        type: string
-      total_amount:
-        example: 99.99
-        type: number
-      updated_at:
-        example: "2023-01-01T00:00:00Z"
         type: string
     type: object
 host: localhost:8080
@@ -52,46 +87,25 @@ info:
   title: Order Service API
   version: "1.0"
 paths:
-  /admin/v1/orders:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve all orders from the system
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of orders
-          schema:
-            items:
-              $ref: '#/definitions/order.OrderResponse'
-            type: array
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all orders
-      tags:
-      - orders
-  /v1/orders:
+  /v1/campaigns:
     post:
       consumes:
       - application/json
-      description: Create a new order with the provided details
+      description: Create a new marketing campaign with the provided details
       parameters:
-      - description: Order information
+      - description: Campaign information
         in: body
-        name: order
+        name: campaign
         required: true
         schema:
-          $ref: '#/definitions/order.CreateOrderRequest'
+          $ref: '#/definitions/handler.CreateCampaignRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: Order created successfully
+          description: Campaign created successfully
           schema:
-            $ref: '#/definitions/order.OrderResponse'
+            $ref: '#/definitions/campaign.Campaign'
         "400":
           description: Bad request
           schema:
@@ -100,9 +114,9 @@ paths:
           description: Internal server error
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
-      summary: Create a new order
+      summary: Create a new campaign
       tags:
-      - orders
+      - campaigns
 schemes:
 - http
 - https

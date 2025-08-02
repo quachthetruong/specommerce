@@ -12,6 +12,7 @@ type Order struct {
 	Id            xid.ID    `bun:",skipupdate,pk"`
 	TotalAmount   float64   `bun:"total_amount,notnull"`
 	CustomerID    string    `bun:"customer_id,notnull"`
+	CustomerName  string    `bun:"customer_name,notnull"`
 	Status        string    `bun:"status,notnull,default:'PENDING'"` //
 	CreatedAt     time.Time `bun:",nullzero,notnull,default:current_timestamp,skipupdate"`
 	UpdatedAt     time.Time `bun:",nullzero,notnull,default:current_timestamp"`
@@ -19,22 +20,24 @@ type Order struct {
 
 func (o Order) ToDomainModel() domain.Order {
 	return domain.Order{
-		Id:          o.Id,
-		CustomerId:  o.CustomerID,
-		TotalAmount: o.TotalAmount,
-		Status:      domain.OrderStatus(o.Status),
-		CreatedAt:   o.CreatedAt,
-		UpdatedAt:   o.UpdatedAt,
+		Id:           o.Id,
+		CustomerId:   o.CustomerID,
+		CustomerName: o.CustomerName,
+		TotalAmount:  o.TotalAmount,
+		Status:       domain.OrderStatus(o.Status),
+		CreatedAt:    o.CreatedAt,
+		UpdatedAt:    o.UpdatedAt,
 	}
 }
 
 func FromDomainModel(dm domain.Order) Order {
 	return Order{
-		Id:          dm.Id,
-		CustomerID:  dm.CustomerId,
-		TotalAmount: dm.TotalAmount,
-		Status:      string(dm.Status),
-		CreatedAt:   dm.CreatedAt,
-		UpdatedAt:   dm.UpdatedAt,
+		Id:           dm.Id,
+		CustomerID:   dm.CustomerId,
+		CustomerName: dm.CustomerName,
+		TotalAmount:  dm.TotalAmount,
+		Status:       string(dm.Status),
+		CreatedAt:    dm.CreatedAt,
+		UpdatedAt:    dm.UpdatedAt,
 	}
 }

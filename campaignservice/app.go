@@ -45,10 +45,10 @@ func Run(logger *slog.Logger, tasks *shutdown.Tasks) error {
 			return server.ServeHTTP(injector)
 		})
 
-	orderCompleteConsumer := do.MustInvoke[*orderConsumer.OrderCompletedConsumer](injector)
+	orderSuccessConsumer := do.MustInvoke[*orderConsumer.OrderSuccessConsumer](injector)
 
 	eg.Go(func() error {
-		return orderCompleteConsumer.Start()
+		return orderSuccessConsumer.Start()
 	})
 
 	return eg.Wait()

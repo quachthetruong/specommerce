@@ -21,8 +21,8 @@ type ProcessPaymentRequest struct {
 type PaymentStatus string
 
 const (
-	PaymentStatusCompleted PaymentStatus = "COMPLETED"
-	PaymentStatusFailed    PaymentStatus = "FAILED"
+	PaymentStatusSuccess PaymentStatus = "SUCCESS"
+	PaymentStatusFailed  PaymentStatus = "FAILED"
 )
 
 type Payment struct {

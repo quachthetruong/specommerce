@@ -3,6 +3,7 @@ syntax = "proto3";
 package kafka;
 
 option go_package = "specommerce/orderservice/model";
+import "google/protobuf/timestamp.proto";
 
 
 // ProcessPaymentRequest represents a request to process payment for an order
@@ -33,3 +34,12 @@ message ProcessPaymentResponse {
   string payment_status = 5;
 }
 
+message Order{
+  string id = 1;
+  string customer_id = 2;
+  string customer_name = 3;
+  double total_amount = 4;
+  string status = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}

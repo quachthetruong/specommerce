@@ -61,7 +61,7 @@ func (c *ProcessPaymentRequestConsumer) handleEvent(message kafka.Message) error
 		OrderId:     orderId,
 		TotalAmount: request.TotalAmount,
 		CustomerId:  request.CustomerId,
-		Status:      payment.PaymentStatusCompleted,
+		Status:      payment.PaymentStatusSuccess,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	})

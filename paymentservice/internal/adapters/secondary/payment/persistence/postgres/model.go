@@ -13,7 +13,7 @@ type Payment struct {
 	OrderId       xid.ID    `bun:"order_id,notnull"` // Reference to the order
 	TotalAmount   float64   `bun:"total_amount,notnull"`
 	CustomerId    string    `bun:"customer_id,notnull"`
-	Status        string    `bun:"status,notnull,default:'COMPLETED'"` //
+	Status        string    `bun:"status,notnull,default:'SUCCESS'"` //
 	CreatedAt     time.Time `bun:",nullzero,notnull,default:current_timestamp,skipupdate"`
 	UpdatedAt     time.Time `bun:",nullzero,notnull,default:current_timestamp"`
 }
