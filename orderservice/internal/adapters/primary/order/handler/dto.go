@@ -15,8 +15,8 @@ type CreateOrderRequest struct {
 // ToOrder converts CreateOrderRequest to domain Order
 func (r *CreateOrderRequest) ToDomain() domain.Order {
 	return domain.Order{
-		ID:          xid.New(),
-		CustomerID:  r.CustomerID,
+		Id:          xid.New(),
+		CustomerId:  r.CustomerID,
 		Status:      domain.OrderStatusPending,
 		TotalAmount: r.TotalAmount,
 		CreatedAt:   time.Now(),
@@ -26,8 +26,8 @@ func (r *CreateOrderRequest) ToDomain() domain.Order {
 
 func ToCreateOrderResponse(d domain.Order) OrderResponse {
 	return OrderResponse{
-		ID:          d.ID.String(),
-		CustomerID:  d.CustomerID,
+		ID:          d.Id.String(),
+		CustomerID:  d.CustomerId,
 		Status:      d.Status.String(),
 		TotalAmount: d.TotalAmount,
 		CreatedAt:   d.CreatedAt,
@@ -39,8 +39,8 @@ func ToGetAllOrderResponse(entities []domain.Order) []OrderResponse {
 	response := make([]OrderResponse, 0, len(entities))
 	for _, entity := range entities {
 		response = append(response, OrderResponse{
-			ID:          entity.ID.String(),
-			CustomerID:  entity.CustomerID,
+			ID:          entity.Id.String(),
+			CustomerID:  entity.CustomerId,
 			Status:      entity.Status.String(),
 			TotalAmount: entity.TotalAmount,
 			CreatedAt:   entity.CreatedAt,

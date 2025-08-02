@@ -21,7 +21,7 @@ func (p *paymentPublisher) SendPaymentRequest(ctx context.Context, input domain.
 	errTemplate := "paymentPublisher PublishProcessPaymentRequest failed: %v"
 
 	sellConfirmationMessage := &model.ProcessPaymentRequest{
-		OrderId:     input.OrderId,
+		OrderId:     input.OrderId.String(),
 		TotalAmount: input.TotalAmount,
 		CustomerId:  input.CustomerId,
 	}

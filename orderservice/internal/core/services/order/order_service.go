@@ -38,8 +38,8 @@ func (s *service) CreateOrder(ctx context.Context, input order.Order) (order.Ord
 			}
 
 			err = s.paymentPublisher.SendPaymentRequest(ctx, payment.ProcessPaymentRequest{
-				OrderId:     pendingOrder.ID.String(),
-				CustomerId:  pendingOrder.CustomerID,
+				OrderId:     pendingOrder.Id,
+				CustomerId:  pendingOrder.CustomerId,
 				TotalAmount: pendingOrder.TotalAmount,
 			})
 			if err != nil {

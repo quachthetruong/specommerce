@@ -16,8 +16,8 @@ const (
 )
 
 type Order struct {
-	ID          xid.ID      `json:"id" bun:"id,pk,skipupdate"`
-	CustomerID  string      `json:"customer_id" bun:"customer_id"`
+	Id          xid.ID      `json:"id" bun:"id,pk,skipupdate"`
+	CustomerId  string      `json:"customer_id" bun:"customer_id"`
 	TotalAmount float64     `json:"total_amount" bun:"total_amount"`
 	Status      OrderStatus `json:"status" bun:"status"`
 	CreatedAt   time.Time   `json:"created_at" bun:",nullzero,notnull,default:current_timestamp,skipupdate"`

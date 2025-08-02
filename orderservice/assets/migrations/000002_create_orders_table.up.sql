@@ -1,7 +1,7 @@
 create type order_status as enum (
     'PENDING',
     'PROCESSING',
-    'SUCCESS',
+    'COMPLETED',
     'FAILED'
 );
 

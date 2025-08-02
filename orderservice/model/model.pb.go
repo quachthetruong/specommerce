@@ -9,7 +9,6 @@ package model
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -87,16 +86,104 @@ func (x *ProcessPaymentRequest) GetTotalAmount() float64 {
 	return 0
 }
 
+type ProcessPaymentResponse struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	PaymentId string                 `protobuf:"bytes,1,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	// Order ID
+	OrderId string `protobuf:"bytes,2,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
+	// Customer ID
+	CustomerId string `protobuf:"bytes,3,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
+	// Total amount to be paid
+	TotalAmount float64 `protobuf:"fixed64,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	// Payment status
+	PaymentStatus string `protobuf:"bytes,5,opt,name=payment_status,json=paymentStatus,proto3" json:"payment_status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProcessPaymentResponse) Reset() {
+	*x = ProcessPaymentResponse{}
+	mi := &file_model_model_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProcessPaymentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProcessPaymentResponse) ProtoMessage() {}
+
+func (x *ProcessPaymentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_model_model_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProcessPaymentResponse.ProtoReflect.Descriptor instead.
+func (*ProcessPaymentResponse) Descriptor() ([]byte, []int) {
+	return file_model_model_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ProcessPaymentResponse) GetPaymentId() string {
+	if x != nil {
+		return x.PaymentId
+	}
+	return ""
+}
+
+func (x *ProcessPaymentResponse) GetOrderId() string {
+	if x != nil {
+		return x.OrderId
+	}
+	return ""
+}
+
+func (x *ProcessPaymentResponse) GetCustomerId() string {
+	if x != nil {
+		return x.CustomerId
+	}
+	return ""
+}
+
+func (x *ProcessPaymentResponse) GetTotalAmount() float64 {
+	if x != nil {
+		return x.TotalAmount
+	}
+	return 0
+}
+
+func (x *ProcessPaymentResponse) GetPaymentStatus() string {
+	if x != nil {
+		return x.PaymentStatus
+	}
+	return ""
+}
+
 var File_model_model_proto protoreflect.FileDescriptor
 
 const file_model_model_proto_rawDesc = "" +
 	"\n" +
-	"\x11model/model.proto\x12\x05kafka\x1a\x1fgoogle/protobuf/timestamp.proto\"v\n" +
+	"\x11model/model.proto\x12\x05kafka\"v\n" +
 	"\x15ProcessPaymentRequest\x12\x19\n" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12\x1f\n" +
 	"\vcustomer_id\x18\x02 \x01(\tR\n" +
 	"customerId\x12!\n" +
-	"\ftotal_amount\x18\x03 \x01(\x01R\vtotalAmountB Z\x1especommerce/orderservice/modelb\x06proto3"
+	"\ftotal_amount\x18\x03 \x01(\x01R\vtotalAmount\"\xbd\x01\n" +
+	"\x16ProcessPaymentResponse\x12\x1d\n" +
+	"\n" +
+	"payment_id\x18\x01 \x01(\tR\tpaymentId\x12\x19\n" +
+	"\border_id\x18\x02 \x01(\tR\aorderId\x12\x1f\n" +
+	"\vcustomer_id\x18\x03 \x01(\tR\n" +
+	"customerId\x12!\n" +
+	"\ftotal_amount\x18\x04 \x01(\x01R\vtotalAmount\x12%\n" +
+	"\x0epayment_status\x18\x05 \x01(\tR\rpaymentStatusB Z\x1especommerce/orderservice/modelb\x06proto3"
 
 var (
 	file_model_model_proto_rawDescOnce sync.Once
@@ -110,9 +197,10 @@ func file_model_model_proto_rawDescGZIP() []byte {
 	return file_model_model_proto_rawDescData
 }
 
-var file_model_model_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_model_model_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_model_model_proto_goTypes = []any{
-	(*ProcessPaymentRequest)(nil), // 0: kafka.ProcessPaymentRequest
+	(*ProcessPaymentRequest)(nil),  // 0: kafka.ProcessPaymentRequest
+	(*ProcessPaymentResponse)(nil), // 1: kafka.ProcessPaymentResponse
 }
 var file_model_model_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -133,7 +221,7 @@ func file_model_model_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_model_model_proto_rawDesc), len(file_model_model_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

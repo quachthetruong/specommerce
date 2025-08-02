@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/rs/xid"
 	domain "specommerce/orderservice/internal/core/domain/order"
 	"specommerce/orderservice/internal/core/ports/secondary"
 	"specommerce/orderservice/pkg/database"
@@ -36,4 +37,17 @@ func (r *orderPersistenceRepository) Create(ctx context.Context, order domain.Or
 		return domain.Order{}, fmt.Errorf("orderPersistenceRepository CreateOrder %w", err)
 	}
 	return created.ToDomainModel(), nil
+}
+
+func (r *orderPersistenceRepository) UpdateStatusById(ctx context.Context, id xid.ID, status domain.OrderStatus) (domain.Order, error) {
+	errTemplate := "orderPersistenceRepository.UpdateStatusById: %w"
+	record := Order{}
+	_, err := r.getDbFunc(ctx).NewUpdate().Model((*Order)(nil)).
+		Where("id = ?", id).
+		Set("status = ?", status).
+		Returning("*").Exec(ctx, &record)
+	if err != nil {
+		return domain.Order{}, fmt.Errorf(errTemplate, err)
+	}
+	return record.ToDomainModel(), nil
 }

@@ -19,8 +19,8 @@ type Order struct {
 
 func (o Order) ToDomainModel() domain.Order {
 	return domain.Order{
-		ID:          o.Id,
-		CustomerID:  o.CustomerID,
+		Id:          o.Id,
+		CustomerId:  o.CustomerID,
 		TotalAmount: o.TotalAmount,
 		Status:      domain.OrderStatus(o.Status),
 		CreatedAt:   o.CreatedAt,
@@ -30,8 +30,8 @@ func (o Order) ToDomainModel() domain.Order {
 
 func FromDomainModel(dm domain.Order) Order {
 	return Order{
-		Id:          dm.ID,
-		CustomerID:  dm.CustomerID,
+		Id:          dm.Id,
+		CustomerID:  dm.CustomerId,
 		TotalAmount: dm.TotalAmount,
 		Status:      string(dm.Status),
 		CreatedAt:   dm.CreatedAt,
