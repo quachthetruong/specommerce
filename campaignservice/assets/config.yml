@@ -1,0 +1,27 @@
+env: local
+db:
+  user: postgres
+  password: postgres
+  host: localhost
+  port: 5434
+  dbName: campaign_db
+  enableSsl: false
+  autoMigrate: true
+
+server:
+  name: "campaign-service"
+  port: 8082
+
+kafka:
+  host: localhost:9093
+  retry: 5
+  autoCreateTopic: true
+  consumerGroup: campaign-service
+  topic: notification_topic
+
+orderComplete:
+  host: localhost:9093
+  topic: order_complete
+  consumerGroup: campaign-service
+  retry: 5
+  autoCreateTopic: true

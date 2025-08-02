@@ -14,7 +14,6 @@ services:
 
   payment-db:
     image: docker.io/bitnami/postgresql:14
-    container_name: payment-db
     environment:
       - POSTGRESQL_DATABASE=payment_db
       - POSTGRESQL_USERNAME=postgres
@@ -23,6 +22,18 @@ services:
       - "5433:5432"
     volumes:
       - payment_data:/var/lib/postgresql/data
+
+  campaign-db:
+    image: docker.io/bitnami/postgresql:14
+    container_name: campaign_db
+    environment:
+      - POSTGRESQL_DATABASE=campaign_db
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - campaign_data:/var/lib/postgresql/data
 
   kafka:
     platform: linux/x86_64
@@ -51,3 +62,4 @@ services:
 volumes:
   order_data:
   payment_data:
+  campaign_data:

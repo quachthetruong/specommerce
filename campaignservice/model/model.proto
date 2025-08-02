@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package kafka;
+
+option go_package = "specommerce/campaignservice/model";
+import "google/protobuf/timestamp.proto";
+
+
+// ProcessPaymentRequest represents a request to process payment for an order
+// Contains the same information as domain Order
+message OrderCompleted {
+  string id = 1;
+  string customer_id = 2;
+  double total_amount = 3;
+  string status = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
