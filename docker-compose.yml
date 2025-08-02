@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  order-db:
+    image: docker.io/bitnami/postgresql:14
+    ports:
+      - "5432:5432"
+    volumes:
+      - order_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRESQL_DATABASE=order_db
+      - POSTGRESQL_USERNAME=postgres
+      - POSTGRESQL_PASSWORD=postgres
+
+  payment-db:
+    image: docker.io/bitnami/postgresql:14
+    container_name: payment-db
+    environment:
+      - POSTGRESQL_DATABASE= payment_db
+      - POSTGRESQL_USERNAME= postgres
+      - POSTGRESQL_PASSWORD= postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - payment_data:/var/lib/postgresql/data
+
+  kafka:
+    platform: linux/x86_64
+    image: moeenz/docker-kafka-kraft:latest
+    restart: always
+    ports:
+      - "9093:9093"
+    environment:
+      - KRAFT_CONTAINER_HOST_NAME=kafka
+      - KRAFT_PARTITIONS_PER_TOPIC=1
+      - KRAFT_CREATE_TOPICS=payment_process_request, payment_process_response
+
+  kafka-ui:
+    platform: linux/x86_64
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "3030:8080"
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+      DYNAMIC_CONFIG_ENABLED: "true"
+
+volumes:
+  order_data:
+  payment_data:
