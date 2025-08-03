@@ -73,13 +73,13 @@ func (p *Paging) TotalPages(totalRecords int) uint {
 }
 
 type MetaData struct {
-	Total      int
-	PageSize   uint
-	PageNumber uint
-	TotalPages uint
+	Total      int  `json:"total"`
+	PageSize   uint `json:"page_size"`
+	PageNumber uint `json:"page_number"`
+	TotalPages uint `json:"total_pages"`
 }
 
 type Page[T any] struct {
-	Data     []T
-	Metadata MetaData
+	Data     []T      `json:"data"`
+	Metadata MetaData `json:"metadata"`
 }

@@ -26,3 +26,5 @@ orderSuccess:
   consumerGroup: campaign-service
   retry: 5
   autoCreateTopic: true
+
+iphoneCampaign: iphone

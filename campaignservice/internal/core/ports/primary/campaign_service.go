@@ -7,5 +7,7 @@ import (
 
 type CampaignService interface {
 	CreateCampaign(ctx context.Context, input campaign.Campaign) (campaign.Campaign, error)
+	GetIphoneCampaign(ctx context.Context) (campaign.Campaign, error)
+	UpdateIphoneCampaign(ctx context.Context, input campaign.Campaign) (campaign.Campaign, error)
 	GetIphoneWinner(ctx context.Context) ([]campaign.IphoneWinner, error)
 }

@@ -37,6 +37,24 @@ func (r *campaignPersistenceRepository) Create(ctx context.Context, campaign dom
 	return entity, nil
 }
 
+func (r *campaignPersistenceRepository) Update(ctx context.Context, campaign domain.Campaign) (domain.Campaign, error) {
+	errTemplate := "campaignPersistenceRepository UpdateCampaign %w"
+	campaignModel, err := FromDomainModel(campaign)
+	if err != nil {
+		return domain.Campaign{}, fmt.Errorf(errTemplate, err)
+	}
+	updated, err := database.NewPostgresCrudDatabaseOperation[Campaign](r.getDbFunc).Update(ctx, campaignModel)
+	if err != nil {
+		return domain.Campaign{}, fmt.Errorf(errTemplate, err)
+	}
+
+	entity, err := updated.ToDomainModel()
+	if err != nil {
+		return domain.Campaign{}, fmt.Errorf(errTemplate, err)
+	}
+	return entity, nil
+}
+
 func (r *campaignPersistenceRepository) GetCampaignByType(ctx context.Context, campaignType string) (domain.Campaign, error) {
 	errTemplate := "campaignPersistenceRepository GetCampaignByType %w"
 	record, err := database.NewPostgresCrudDatabaseOperation[Campaign](r.getDbFunc).Get(ctx, func(query *bun.SelectQuery) *bun.SelectQuery {

@@ -6,12 +6,15 @@ import (
 	domain "specommerce/campaignservice/internal/core/domain/campaign"
 	"specommerce/campaignservice/internal/core/ports/primary"
 	"specommerce/campaignservice/pkg/sharedto/handler"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type CampaignHandler interface {
 	CreateIphoneCampaign(ctx *gin.Context)
+	GetIphoneCampaign(ctx *gin.Context)
+	UpdateIphoneCampaign(ctx *gin.Context)
 	GetIphoneWinner(ctx *gin.Context)
 }
 
@@ -53,6 +56,61 @@ func (h *campaignHandler) CreateIphoneCampaign(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, handler.BaseResponse[domain.Campaign]{
 		Data: createdCampaign,
+	})
+}
+
+// GetIphoneCampaign godoc
+// @Summary Get iPhone campaign
+// @Description Get the current iPhone campaign details
+// @Tags campaigns
+// @Accept json
+// @Produce json
+// @Success 200 {object} campaign.Campaign "Campaign retrieved successfully"
+// @Failure 404 {object} handler.ErrorResponse "Campaign not found"
+// @Failure 500 {object} handler.ErrorResponse "Internal server error"
+// @Router /admin/v1/campaigns/iphones [get]
+func (h *campaignHandler) GetIphoneCampaign(ctx *gin.Context) {
+	campaign, err := h.campaignService.GetIphoneCampaign(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, handler.BaseResponse[domain.Campaign]{
+		Data: campaign,
+	})
+}
+
+// UpdateIphoneCampaign godoc
+// @Summary Update iPhone campaign
+// @Description Update an existing iPhone campaign with the provided details
+// @Tags campaigns
+// @Accept json
+// @Produce json
+// @Param campaign body UpdateIphoneCampaignRequest true "Campaign information"
+// @Success 200 {object} campaign.Campaign "Campaign updated successfully"
+// @Failure 400 {object} handler.ErrorResponse "Bad request"
+// @Failure 500 {object} handler.ErrorResponse "Internal server error"
+// @Router /admin/v1/campaigns/iphones/{id} [put]
+func (h *campaignHandler) UpdateIphoneCampaign(ctx *gin.Context) {
+	var req UpdateIphoneCampaignRequest
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Campaign ID is required"})
+	}
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedCampaign, err := h.campaignService.UpdateIphoneCampaign(ctx, req.ToDomain(id))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, handler.BaseResponse[domain.Campaign]{
+		Data: updatedCampaign,
 	})
 }
 

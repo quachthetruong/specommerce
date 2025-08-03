@@ -37,6 +37,24 @@ func (s *campaignService) CreateCampaign(ctx context.Context, input campaign.Cam
 	return savedCampaign, nil
 }
 
+func (s *campaignService) GetIphoneCampaign(ctx context.Context) (campaign.Campaign, error) {
+	errTemplate := "campaignService GetIphoneCampaign %w"
+	campaign, err := s.campaignRepository.GetCampaignByType(ctx, s.config.IphoneCampaign)
+	if err != nil {
+		return campaign, fmt.Errorf(errTemplate, err)
+	}
+	return campaign, nil
+}
+
+func (s *campaignService) UpdateIphoneCampaign(ctx context.Context, input campaign.Campaign) (campaign.Campaign, error) {
+	errTemplate := "campaignService UpdateIphoneCampaign %w"
+	updatedCampaign, err := s.campaignRepository.Update(ctx, input)
+	if err != nil {
+		return campaign.Campaign{}, fmt.Errorf(errTemplate, err)
+	}
+	return updatedCampaign, nil
+}
+
 func (s *campaignService) GetIphoneWinner(ctx context.Context) ([]campaign.IphoneWinner, error) {
 	errTemplate := "campaignService GetWinner %w"
 	campaign, err := s.campaignRepository.GetCampaignByType(ctx, s.config.IphoneCampaign)

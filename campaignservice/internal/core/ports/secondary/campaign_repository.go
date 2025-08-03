@@ -7,6 +7,7 @@ import (
 
 type CampaignRepository interface {
 	Create(ctx context.Context, input domain.Campaign) (domain.Campaign, error)
+	Update(ctx context.Context, input domain.Campaign) (domain.Campaign, error)
 	GetIphoneWinner(ctx context.Context, campaign domain.IphoneCampaign) ([]domain.IphoneWinner, error)
 	GetCampaignByType(ctx context.Context, campaignType string) (domain.Campaign, error)
 }
