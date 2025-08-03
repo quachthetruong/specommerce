@@ -7,6 +7,7 @@ db:
   dbName: order_db
   enableSsl: false
   autoMigrate: true
+  enableQueryHook: true
 
 server:
   name: "order-service"

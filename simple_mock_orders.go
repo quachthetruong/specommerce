@@ -76,36 +76,33 @@ var customers = []struct {
 
 const (
 	orderServiceURL = "http://localhost:8080/api/v1/orders"
-	batchSize       = 25 // Process in batches
 	totalOrders     = 500
 	ordersBelow200  = 400 // Orders less than $200
 	orders200to400  = 100 // Orders from $200 to $400
+	maxConcurrency  = 50  // Maximum concurrent requests
 )
 
-func createOrder(client *http.Client, order CreateOrderRequest) error {
+func createOrder(client *http.Client, order CreateOrderRequest, wg *sync.WaitGroup, orderNum int) {
+	defer wg.Done()
+	
+	// Random sleep between 3-10 seconds
+	sleepDuration := time.Duration(3+rand.Intn(8)) * time.Second
+	time.Sleep(sleepDuration)
+	
 	jsonData, _ := json.Marshal(order)
 	req, _ := http.NewRequest("POST", orderServiceURL, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		fmt.Printf("Error creating order #%d for %s: %v\n", orderNum, order.CustomerID, err)
+		return
 	}
 	defer resp.Body.Close()
 
-	fmt.Printf("%d %s: $%.2f\n", resp.StatusCode, order.CustomerID, order.TotalAmount)
-	return nil
+	fmt.Printf("Order #%d - %d %s: $%.2f (waited %.1fs)\n", orderNum, resp.StatusCode, order.CustomerID, order.TotalAmount, sleepDuration.Seconds())
 }
 
-func processBatch(client *http.Client, orders []CreateOrderRequest, wg *sync.WaitGroup) {
-	defer wg.Done()
-	for _, order := range orders {
-		err := createOrder(client, order)
-		if err != nil {
-			fmt.Printf("Error creating order for %s: %v\n", order.CustomerID, err)
-		}
-	}
-}
 
 // Step 1: Create two separate lists of transactions with proper ratios
 // Step 2: Generate 400 transactions below $200 and 100 transactions between $200 and $400
@@ -113,15 +110,18 @@ func processBatch(client *http.Client, orders []CreateOrderRequest, wg *sync.Wai
 // Step 4: Assign the first 200 transactions to the first 200 unique customers
 // Step 5: Distribute the remaining 300 transactions randomly among all customers
 // Step 6: Combine and shuffle all orders
-// Step 7: Process in batches of 25
+// Step 7: Process all orders concurrently with random delays
 func main() {
 	fmt.Println("Simple Order Mock Generator")
 	fmt.Printf("Target: %d orders (%d < $200, %d $200-$400)\n", totalOrders, ordersBelow200, orders200to400)
 	fmt.Printf("Using %d unique customers\n", len(customers))
-	fmt.Printf("Batch size: %d\n", batchSize)
+	fmt.Printf("Running orders concurrently with 3-10 second random delays\n")
 	fmt.Println(strings.Repeat("=", 50))
 
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := &http.Client{Timeout: 30 * time.Second}
+	
+	// Create a semaphore to limit concurrency
+	semaphore := make(chan struct{}, maxConcurrency)
 
 	var belowTransactions []CreateOrderRequest
 	var aboveTransactions []CreateOrderRequest
@@ -181,18 +181,16 @@ func main() {
 	var wg sync.WaitGroup
 	start := time.Now()
 
-	for i := 0; i < len(allOrders); i += batchSize {
-		end := i + batchSize
-		if end > len(allOrders) {
-			end = len(allOrders)
-		}
-
-		batch := allOrders[i:end]
+	fmt.Printf("Starting %d orders with max %d concurrent requests...\n", len(allOrders), maxConcurrency)
+	
+	// Launch all orders with concurrency limit
+	for i, order := range allOrders {
 		wg.Add(1)
-		go processBatch(client, batch, &wg)
-
-		fmt.Printf("Batch %d-%d sent\n", i+1, end)
-		time.Sleep(100 * time.Millisecond)
+		go func(ord CreateOrderRequest, orderNum int) {
+			semaphore <- struct{}{} // Acquire semaphore
+			defer func() { <-semaphore }() // Release semaphore
+			createOrder(client, ord, &wg, orderNum)
+		}(order, i+1)
 	}
 
 	wg.Wait()

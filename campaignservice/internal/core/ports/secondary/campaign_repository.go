@@ -3,10 +3,10 @@ package secondary
 import (
 	"context"
 	domain "specommerce/campaignservice/internal/core/domain/campaign"
-	"specommerce/campaignservice/internal/core/domain/customer"
 )
 
 type CampaignRepository interface {
 	Create(ctx context.Context, input domain.Campaign) (domain.Campaign, error)
-	GetWinner(ctx context.Context, campaignID int64) ([]customer.Customer, error)
+	GetIphoneWinner(ctx context.Context, campaign domain.IphoneCampaign) ([]domain.IphoneWinner, error)
+	GetCampaignByType(ctx context.Context, campaignType string) (domain.Campaign, error)
 }

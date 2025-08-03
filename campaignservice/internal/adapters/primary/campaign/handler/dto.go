@@ -16,9 +16,10 @@ type CreateIphoneCampaignRequest struct {
 	MaxTrackedOrders int64     `json:"max_tracked_orders" binding:"required"`
 }
 
-func (r CreateIphoneCampaignRequest) ToDomain() domain.Campaign {
+func (r CreateIphoneCampaignRequest) ToDomain(campaignType string) domain.Campaign {
 	return domain.Campaign{
 		Name:        r.Name,
+		Type:        campaignType,
 		Description: r.Description,
 		StartTime:   r.StartTime,
 		EndTime:     r.EndTime,

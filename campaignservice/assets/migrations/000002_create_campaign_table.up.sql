@@ -1,7 +1,8 @@
 
 create table campaigns (
-    id integer primary key not null,
+    id bigserial primary key,
     name varchar(100) not null,
+    type varchar(50) unique not null,
     description text not null,
     start_time timestamp with time zone not null,
     end_time timestamp with time zone not null,

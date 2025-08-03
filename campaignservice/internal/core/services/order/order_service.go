@@ -3,7 +3,6 @@ package order
 import (
 	"context"
 	"fmt"
-	"specommerce/campaignservice/internal/core/domain/customer"
 	"specommerce/campaignservice/internal/core/domain/order"
 	"specommerce/campaignservice/internal/core/ports/primary"
 	"specommerce/campaignservice/internal/core/ports/secondary"
@@ -32,8 +31,4 @@ func (s *service) CreateOrder(ctx context.Context, input order.Order) (order.Ord
 		return order.Order{}, fmt.Errorf(errTemplate, err)
 	}
 	return savedOrder, nil
-}
-
-func (s *service) GetWinner(ctx context.Context, campaignID int64) ([]customer.Customer, error) {
-	return []customer.Customer{}, nil
 }

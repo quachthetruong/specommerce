@@ -11,5 +11,6 @@ func adminRoutes(routerGroup *gin.RouterGroup, injector do.Injector) {
 	campaign := do.MustInvoke[campaignHandler.CampaignHandler](injector)
 
 	v1OrderGroup := routerGroup.Group("v1/campaigns")
-	v1OrderGroup.POST("/iphone", campaign.CreateIphoneCampaign)
+	v1OrderGroup.POST("/iphones", campaign.CreateIphoneCampaign)
+	v1OrderGroup.GET("/iphones/winners", campaign.GetIphoneWinner)
 }

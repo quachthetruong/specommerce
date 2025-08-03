@@ -3,8 +3,8 @@ package campaign
 import (
 	"context"
 	"fmt"
+	"specommerce/campaignservice/config"
 	"specommerce/campaignservice/internal/core/domain/campaign"
-	"specommerce/campaignservice/internal/core/domain/customer"
 	"specommerce/campaignservice/internal/core/ports/primary"
 	"specommerce/campaignservice/internal/core/ports/secondary"
 	"specommerce/campaignservice/pkg/atomicity"
@@ -13,15 +13,18 @@ import (
 type campaignService struct {
 	campaignRepository secondary.CampaignRepository
 	atomicExecutor     atomicity.AtomicExecutor
+	config             config.AppConfig
 }
 
 func NewCampaignService(
 	campaignRepository secondary.CampaignRepository,
 	atomicExecutor atomicity.AtomicExecutor,
+	config config.AppConfig,
 ) primary.CampaignService {
 	return &campaignService{
 		campaignRepository: campaignRepository,
 		atomicExecutor:     atomicExecutor,
+		config:             config,
 	}
 }
 
@@ -34,9 +37,17 @@ func (s *campaignService) CreateCampaign(ctx context.Context, input campaign.Cam
 	return savedCampaign, nil
 }
 
-func (s *campaignService) GetWinner(ctx context.Context, campaignID int64) ([]customer.Customer, error) {
+func (s *campaignService) GetIphoneWinner(ctx context.Context) ([]campaign.IphoneWinner, error) {
 	errTemplate := "campaignService GetWinner %w"
-	winners, err := s.campaignRepository.GetWinner(ctx, campaignID)
+	campaign, err := s.campaignRepository.GetCampaignByType(ctx, s.config.IphoneCampaign)
+	if err != nil {
+		return nil, fmt.Errorf(errTemplate, err)
+	}
+	iphoneCampaign, err := campaign.ToIphoneCampaign()
+	if err != nil {
+		return nil, fmt.Errorf(errTemplate, err)
+	}
+	winners, err := s.campaignRepository.GetIphoneWinner(ctx, iphoneCampaign)
 	if err != nil {
 		return nil, fmt.Errorf(errTemplate, err)
 	}

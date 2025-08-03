@@ -48,9 +48,11 @@ func NewCampaignRepository(injector do.Injector) (secondary.CampaignRepository, 
 func NewCampaignService(injector do.Injector) (primary.CampaignService, error) {
 	campaignRepository := do.MustInvoke[secondary.CampaignRepository](injector)
 	atomicExecutor := do.MustInvoke[atomicity.AtomicExecutor](injector)
+	cfg := do.MustInvoke[config.AppConfig](injector)
 	return campaignService.NewCampaignService(
 		campaignRepository,
 		atomicExecutor,
+		cfg,
 	), nil
 }
 
@@ -72,7 +74,8 @@ func NewOrderService(injector do.Injector) (primary.OrderService, error) {
 
 func NewCampaignHandler(injector do.Injector) (campaignHandler.CampaignHandler, error) {
 	service := do.MustInvoke[primary.CampaignService](injector)
-	return campaignHandler.NewCampaignHandler(service), nil
+	cfg := do.MustInvoke[config.AppConfig](injector)
+	return campaignHandler.NewCampaignHandler(service, cfg), nil
 }
 
 func NewPublisher(injector do.Injector) (messagequeue.Publisher, error) {
