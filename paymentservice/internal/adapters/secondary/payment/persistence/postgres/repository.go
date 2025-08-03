@@ -6,6 +6,7 @@ import (
 	domain "specommerce/paymentservice/internal/core/domain/payment"
 	"specommerce/paymentservice/internal/core/ports/secondary"
 	"specommerce/paymentservice/pkg/database"
+	"specommerce/paymentservice/pkg/pagination"
 )
 
 type paymentPersistenceRepository struct {
@@ -36,4 +37,33 @@ func (r *paymentPersistenceRepository) Create(ctx context.Context, payment domai
 		return domain.Payment{}, fmt.Errorf("paymentPersistenceRepository CreatePayment %w", err)
 	}
 	return created.ToDomainModel(), nil
+}
+
+func (r *paymentPersistenceRepository) SearchPayments(ctx context.Context, filter secondary.SearchPaymentsFilter) (pagination.Page[domain.Payment], error) {
+	errTemplate := "paymentPersistenceRepository.SearchPayments: %w"
+
+	records := make([]Payment, 0)
+	query := r.getDbFunc(ctx).NewSelect().Model(&records).
+		Limit(filter.Limit()).Offset(filter.Offset()).
+		Order(filter.Sort.Strings()...)
+
+	count, err := query.ScanAndCount(ctx)
+	if err != nil {
+		return pagination.Page[domain.Payment]{}, fmt.Errorf(errTemplate, err)
+	}
+
+	payments := make([]domain.Payment, 0, len(records))
+	for _, record := range records {
+		payments = append(payments, record.ToDomainModel())
+	}
+
+	return pagination.Page[domain.Payment]{
+		Data: payments,
+		Metadata: pagination.MetaData{
+			Total:      count,
+			PageSize:   filter.Size,
+			PageNumber: filter.Number,
+			TotalPages: filter.TotalPages(count),
+		},
+	}, nil
 }

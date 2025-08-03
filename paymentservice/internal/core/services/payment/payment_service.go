@@ -7,6 +7,7 @@ import (
 	"specommerce/paymentservice/internal/core/ports/primary"
 	"specommerce/paymentservice/internal/core/ports/secondary"
 	"specommerce/paymentservice/pkg/atomicity"
+	"specommerce/paymentservice/pkg/pagination"
 )
 
 type paymentService struct {
@@ -60,4 +61,8 @@ func (s *paymentService) ProcessPaymentRequest(ctx context.Context, input paymen
 	}
 	return paymentResponse, nil
 
+}
+
+func (s *paymentService) SearchPayments(ctx context.Context, filter secondary.SearchPaymentsFilter) (pagination.Page[payment.Payment], error) {
+	return s.paymentRepository.SearchPayments(ctx, filter)
 }

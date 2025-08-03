@@ -12,4 +12,5 @@ func adminRoutes(routerGroup *gin.RouterGroup, injector do.Injector) {
 
 	v1PaymentGroup := routerGroup.Group("/v1/payments")
 	v1PaymentGroup.GET("", payment.GetAllPayments)
+	v1PaymentGroup.GET("/search", payment.SearchPayments)
 }
