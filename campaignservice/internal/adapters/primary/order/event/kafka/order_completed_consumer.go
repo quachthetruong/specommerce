@@ -42,7 +42,7 @@ func (c *OrderSuccessConsumer) handleEvent(message kafka.Message) error {
 		slog.String("key", string(message.Key)),
 	)
 
-	// Parse the order complete event
+	// Parse the order complete event (protobuf format)
 	var orderEvent model.Order
 	if err := proto.Unmarshal(message.Value, &orderEvent); err != nil {
 		return fmt.Errorf(errorTemplate, err)

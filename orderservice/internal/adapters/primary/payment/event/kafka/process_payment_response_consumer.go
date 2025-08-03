@@ -18,13 +18,13 @@ import (
 type ProcessPaymentResponseConsumer struct {
 	baseListener *messagequeue.BaseEventListener
 	config       service_config.KafkaConfig
-	service      primary.PaymentService
+	service      primary.OrderService
 }
 
 func NewProcessPaymentResponseConsumer(
 	baseListener *messagequeue.BaseEventListener,
 	cfg service_config.KafkaConfig,
-	service primary.PaymentService,
+	service primary.OrderService,
 ) *ProcessPaymentResponseConsumer {
 	return &ProcessPaymentResponseConsumer{
 		baseListener: baseListener,

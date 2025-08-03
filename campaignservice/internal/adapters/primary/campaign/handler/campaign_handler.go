@@ -10,7 +10,7 @@ import (
 )
 
 type CampaignHandler interface {
-	CreateCampaign(ctx *gin.Context)
+	CreateIphoneCampaign(ctx *gin.Context)
 }
 
 type campaignHandler struct {
@@ -33,9 +33,9 @@ func NewCampaignHandler(campaignService primary.CampaignService) CampaignHandler
 // @Success 200 {object} campaign.Campaign "Campaign created successfully"
 // @Failure 400 {object} handler.ErrorResponse "Bad request"
 // @Failure 500 {object} handler.ErrorResponse "Internal server error"
-// @Router /v1/campaigns [post]
-func (h *campaignHandler) CreateCampaign(ctx *gin.Context) {
-	var req CreateCampaignRequest
+// @Router /v1/campaigns/iphone [post]
+func (h *campaignHandler) CreateIphoneCampaign(ctx *gin.Context) {
+	var req CreateIphoneCampaignRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

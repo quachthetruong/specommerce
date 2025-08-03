@@ -6,7 +6,7 @@ import (
 )
 
 // CreateCampaignRequest represents the request for creating a campaign
-type CreateCampaignRequest struct {
+type CreateIphoneCampaignRequest struct {
 	Name             string    `json:"name" binding:"required"`
 	Description      string    `json:"description" binding:"required"`
 	StartTime        time.Time `json:"start_time" binding:"required"`
@@ -16,7 +16,7 @@ type CreateCampaignRequest struct {
 	MaxTrackedOrders int64     `json:"max_tracked_orders" binding:"required"`
 }
 
-func (r CreateCampaignRequest) ToDomain() domain.Campaign {
+func (r CreateIphoneCampaignRequest) ToDomain() domain.Campaign {
 	return domain.Campaign{
 		Name:        r.Name,
 		Description: r.Description,
@@ -24,10 +24,10 @@ func (r CreateCampaignRequest) ToDomain() domain.Campaign {
 		EndTime:     r.EndTime,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
-		Policy: domain.CampaignPolicy{
-			TotalReward:      r.TotalReward,
-			MinOrderAmount:   r.MinOrderAmount,
-			MaxTrackedOrders: r.MaxTrackedOrders,
+		Policy: map[string]any{
+			"total_reward":       r.TotalReward,
+			"min_order_amount":   r.MinOrderAmount,
+			"max_tracked_orders": r.MaxTrackedOrders,
 		},
 	}
 }

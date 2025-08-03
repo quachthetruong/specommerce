@@ -32,3 +32,10 @@ processPaymentResponse:
   consumerGroup: order-service
   retry: 5
   autoCreateTopic: true
+
+orderSuccess:
+  host: localhost:9093
+  topic: order_success
+  consumerGroup: order-service
+  retry: 5
+  autoCreateTopic: true

@@ -6,7 +6,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/rs/xid"
 	"log/slog"
-	"math/rand"
 	"specommerce/paymentservice/internal/core/domain/payment"
 	"specommerce/paymentservice/internal/core/ports/primary"
 	"specommerce/paymentservice/model"
@@ -45,7 +44,6 @@ func (c *ProcessPaymentRequestConsumer) handleEvent(message kafka.Message) error
 		slog.String("topic", message.Topic),
 		slog.String("key", string(message.Key)),
 	)
-	time.Sleep(time.Duration(rand.Intn(10)) * time.Second) // Simulate processing delay
 
 	var request model.ProcessPaymentRequest
 	if err := proto.Unmarshal(message.Value, &request); err != nil {

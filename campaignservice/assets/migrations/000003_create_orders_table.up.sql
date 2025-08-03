@@ -16,3 +16,5 @@ create table orders (
 );
 
 select create_updated_at_trigger('orders');
+
+create index orders_customer_id_created_at on orders(customer_id,created_at);
