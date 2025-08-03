@@ -3,6 +3,8 @@ package handler
 import (
 	"github.com/rs/xid"
 	domain "specommerce/orderservice/internal/core/domain/order"
+	"specommerce/orderservice/internal/core/ports/secondary"
+	"specommerce/orderservice/pkg/pagination"
 	"time"
 )
 
@@ -64,4 +66,15 @@ type OrderResponse struct {
 	Status       string    `json:"status" example:"PENDING"`
 	CreatedAt    time.Time `json:"created_at" example:"2023-01-01T00:00:00Z"`
 	UpdatedAt    time.Time `json:"updated_at" example:"2023-01-01T00:00:00Z"`
+}
+
+// SearchOrdersRequest represents the request for searching orders with pagination
+type SearchOrdersRequest struct {
+	Paging pagination.Paging
+}
+
+func (req SearchOrdersRequest) ToFilter() secondary.SearchOrdersFilter {
+	return secondary.SearchOrdersFilter{
+		Paging: req.Paging,
+	}
 }

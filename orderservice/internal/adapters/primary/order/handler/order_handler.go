@@ -11,6 +11,7 @@ import (
 type OrderHandler interface {
 	CreateOrder(ctx *gin.Context)
 	GetAllOrders(ctx *gin.Context)
+	SearchOrders(ctx *gin.Context)
 }
 type orderHandler struct {
 	orderService primary.OrderService
@@ -70,4 +71,34 @@ func (h *orderHandler) GetAllOrders(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, handler.BaseResponse[[]OrderResponse]{
 		Data: ToGetAllOrderResponse(orders),
 	})
+}
+
+// SearchOrders godoc
+// @Summary Search orders with pagination and sorting
+// @Description Search orders with filters, pagination and sorting by created_date or total_amount
+// @Tags orders
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number" minimum(1) default(1)
+// @Param page_size query int false "Page size" minimum(1) default(10)
+// @Param sort_by query string false "Sort by field" Enums(created_at, total_amount)
+// @Param status query string false "Filter by order status"
+// @Success 200 {array} OrderResponse "Paginated orders"
+// @Failure 400 {object} handler.ErrorResponse "Bad request"
+// @Failure 500 {object} handler.ErrorResponse "Internal server error"
+// @Router /admin/v1/orders/search [get]
+func (h *orderHandler) SearchOrders(ctx *gin.Context) {
+	var req SearchOrdersRequest
+	if err := handler.ParsePagination(ctx, &req.Paging); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	result, err := h.orderService.SearchOrders(ctx, req.ToFilter())
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, result)
 }

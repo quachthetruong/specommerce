@@ -10,6 +10,7 @@ import (
 	"specommerce/orderservice/internal/core/ports/primary"
 	"specommerce/orderservice/internal/core/ports/secondary"
 	"specommerce/orderservice/pkg/atomicity"
+	"specommerce/orderservice/pkg/pagination"
 )
 
 // OrderService implements the order business logic
@@ -115,4 +116,8 @@ func (s *service) ProcessPaymentResponse(ctx context.Context, input payment.Proc
 
 func (s *service) GetAllOrders(ctx context.Context) ([]order.Order, error) {
 	return s.orderRepo.GetAll(ctx)
+}
+
+func (s *service) SearchOrders(ctx context.Context, filter secondary.SearchOrdersFilter) (pagination.Page[order.Order], error) {
+	return s.orderRepo.SearchOrders(ctx, filter)
 }

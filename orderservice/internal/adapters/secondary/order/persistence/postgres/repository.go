@@ -7,6 +7,7 @@ import (
 	domain "specommerce/orderservice/internal/core/domain/order"
 	"specommerce/orderservice/internal/core/ports/secondary"
 	"specommerce/orderservice/pkg/database"
+	"specommerce/orderservice/pkg/pagination"
 )
 
 type orderPersistenceRepository struct {
@@ -50,4 +51,33 @@ func (r *orderPersistenceRepository) UpdateStatusById(ctx context.Context, id xi
 		return domain.Order{}, fmt.Errorf(errTemplate, err)
 	}
 	return record.ToDomainModel(), nil
+}
+
+func (r *orderPersistenceRepository) SearchOrders(ctx context.Context, filter secondary.SearchOrdersFilter) (pagination.Page[domain.Order], error) {
+	errTemplate := "orderPersistenceRepository.SearchOrders: %w"
+
+	records := make([]Order, 0)
+	query := r.getDbFunc(ctx).NewSelect().Model(&records).
+		Limit(filter.Limit()).Offset(filter.Offset()).
+		Order(filter.Sort.Strings()...)
+
+	count, err := query.ScanAndCount(ctx)
+	if err != nil {
+		return pagination.Page[domain.Order]{}, fmt.Errorf(errTemplate, err)
+	}
+
+	orders := make([]domain.Order, 0, len(records))
+	for _, record := range records {
+		orders = append(orders, record.ToDomainModel())
+	}
+
+	return pagination.Page[domain.Order]{
+		Data: orders,
+		Metadata: pagination.MetaData{
+			Total:      count,
+			PageSize:   filter.Size,
+			PageNumber: filter.Number,
+			TotalPages: filter.TotalPages(count),
+		},
+	}, nil
 }

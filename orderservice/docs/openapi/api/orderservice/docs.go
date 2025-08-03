@@ -56,6 +56,103 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/v1/orders/search": {
+            "get": {
+                "description": "Search orders with filters, pagination and sorting by created_date or total_amount",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "orders"
+                ],
+                "summary": "Search orders with pagination and sorting",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Page number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "maximum": 100,
+                        "minimum": 1,
+                        "type": "integer",
+                        "default": 20,
+                        "description": "Page size",
+                        "name": "page_size",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "created_at",
+                            "total_amount"
+                        ],
+                        "type": "string",
+                        "default": "created_at",
+                        "description": "Sort by field",
+                        "name": "sort_by",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "ASC",
+                            "DESC"
+                        ],
+                        "type": "string",
+                        "default": "DESC",
+                        "description": "Sort order",
+                        "name": "sort_order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by customer ID",
+                        "name": "customer_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by customer name",
+                        "name": "customer_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filter by order status",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Paginated orders",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.OrderResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/orders": {
             "post": {
                 "description": "Create a new order with the provided details",
@@ -108,10 +205,14 @@ const docTemplate = `{
             "type": "object",
             "required": [
                 "customer_id",
+                "customer_name",
                 "total_amount"
             ],
             "properties": {
                 "customer_id": {
+                    "type": "string"
+                },
+                "customer_name": {
                     "type": "string"
                 },
                 "total_amount": {
@@ -140,6 +241,10 @@ const docTemplate = `{
                 "customer_id": {
                     "type": "string",
                     "example": "customer123"
+                },
+                "customer_name": {
+                    "type": "string",
+                    "example": "John Doe"
                 },
                 "id": {
                     "type": "string",

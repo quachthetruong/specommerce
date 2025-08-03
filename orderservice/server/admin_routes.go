@@ -12,4 +12,5 @@ func adminRoutes(routerGroup *gin.RouterGroup, injector do.Injector) {
 
 	v1OrderGroup := routerGroup.Group("/v1/orders")
 	v1OrderGroup.GET("", order.GetAllOrders)
+	v1OrderGroup.GET("/search", order.SearchOrders)
 }
