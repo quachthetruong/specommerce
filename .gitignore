@@ -19,10 +19,7 @@ go.sum
 
 # Go build artifacts
 */build/
-*/*-server
-orderservice/order-server
-paymentservice/payment-server
-campaignservice/campaign-server
+**/build/
 
 # Dependency directories (remove the comment below to include it)
 vendor/

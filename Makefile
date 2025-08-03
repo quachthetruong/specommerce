@@ -1,9 +1,9 @@
 .PHONY: build run stop clean help
 
 build:
-	cd orderservice && go build -o order-server ./cmd/server
-	cd paymentservice && go build -o payment-server ./cmd/server
-	cd campaignservice && go build -o campaign-server ./cmd/server
+	cd orderservice && mkdir -p build && go build -o build/order-server ./cmd/server
+	cd paymentservice && mkdir -p build && go build -o build/payment-server ./cmd/server
+	cd campaignservice && mkdir -p build && go build -o build/campaign-server ./cmd/server
 
 build-ui:
 	cd adminportal && npm install && npm run build
@@ -11,18 +11,18 @@ build-ui:
 all: build build-ui
 
 run-order:
-	./orderservice/order-server
+	./orderservice/build/order-server
 
 run-payment:
-	./paymentservice/payment-server
+	./paymentservice/build/payment-server
 
 run-campaign:
-	./campaignservice/campaign-server
+	./campaignservice/build/campaign-server
 
 run-bg:
-	./orderservice/order-server &
-	./paymentservice/payment-server &
-	./campaignservice/campaign-server &
+	./orderservice/build/order-server &
+	./paymentservice/build/payment-server &
+	./campaignservice/build/campaign-server &
 	@echo "Services started on ports 8080, 8081, 8082"
 
 run:
@@ -43,9 +43,9 @@ stop:
 	pkill campaign-server || true
 
 clean:
-	rm -f orderservice/order-server
-	rm -f paymentservice/payment-server
-	rm -f campaignservice/campaign-server
+	rm -rf orderservice/build
+	rm -rf paymentservice/build
+	rm -rf campaignservice/build
 	rm -rf adminportal/build
 
 help:

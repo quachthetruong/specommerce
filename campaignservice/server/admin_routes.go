@@ -6,7 +6,6 @@ import (
 	campaignHandler "specommerce/campaignservice/internal/adapters/primary/campaign/handler"
 )
 
-// Route for admin user
 func adminRoutes(routerGroup *gin.RouterGroup, injector do.Injector) {
 	campaign := do.MustInvoke[campaignHandler.CampaignHandler](injector)
 

@@ -42,13 +42,11 @@ func (c *OrderSuccessConsumer) handleEvent(message kafka.Message) error {
 		slog.String("key", string(message.Key)),
 	)
 
-	// Parse the order complete event (protobuf format)
 	var orderEvent model.Order
 	if err := proto.Unmarshal(message.Value, &orderEvent); err != nil {
 		return fmt.Errorf(errorTemplate, err)
 	}
 
-	// Convert to domain object
 	domainOrder, err := ToDomain(orderEvent)
 	if err != nil {
 		return fmt.Errorf(errorTemplate, err)
@@ -56,7 +54,6 @@ func (c *OrderSuccessConsumer) handleEvent(message kafka.Message) error {
 
 	ctx := context.Background()
 
-	// Process the completed order for campaign tracking
 	savedOrder, err := c.orderService.CreateOrder(ctx, domainOrder)
 	if err != nil {
 		return fmt.Errorf(errorTemplate, err)

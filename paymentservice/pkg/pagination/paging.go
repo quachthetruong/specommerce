@@ -28,7 +28,6 @@ func (oo *Orders) Contain(columnName string) bool {
 	return false
 }
 
-// Add merge given orders with skipping duplicated items
 func (oo *Orders) Add(orders ...Order) {
 	for i := range orders {
 		order := &orders[i]
@@ -46,7 +45,6 @@ func (oo *Orders) Strings() []string {
 	return res
 }
 
-// Paging request
 type Paging struct {
 	Sort   Orders
 	Size   uint

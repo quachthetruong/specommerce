@@ -5,32 +5,17 @@ package kafka;
 option go_package = "specommerce/orderservice/model";
 import "google/protobuf/timestamp.proto";
 
-
-// ProcessPaymentRequest represents a request to process payment for an order
-// Contains the same information as domain Order
 message ProcessPaymentRequest {
-  // Order ID
   string order_id = 1;
-
-  // Customer ID
   string customer_id = 2;
-
-  // Total amount to be paid
   double total_amount = 3;
 }
 
 message ProcessPaymentResponse {
   string payment_id = 1;
-  // Order ID
   string order_id = 2;
-
-  // Customer ID
   string customer_id = 3;
-
-  // Total amount to be paid
   double total_amount = 4;
-
-  // Payment status
   string payment_status = 5;
 }
 

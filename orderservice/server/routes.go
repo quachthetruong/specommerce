@@ -29,7 +29,6 @@ func routes(injector do.Injector) http.Handler {
 	docs.SwaggerInfo.Host = "localhost:8080"
 	r := gin.New()
 
-	// Add CORS middleware
 	r.Use(func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")

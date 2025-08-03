@@ -6,7 +6,6 @@ import (
 	paymentHandler "specommerce/paymentservice/internal/adapters/primary/payment/handler"
 )
 
-// Route for admin user
 func adminRoutes(routerGroup *gin.RouterGroup, injector do.Injector) {
 	payment := do.MustInvoke[paymentHandler.PaymentHandler](injector)
 

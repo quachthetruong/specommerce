@@ -14,7 +14,6 @@ const CampaignsPage: React.FC = () => {
   const [existingCampaign, setExistingCampaign] = useState<Campaign | null>(null);
   const [isUpdateMode, setIsUpdateMode] = useState(false);
 
-  // Check for existing campaign on page load
   useEffect(() => {
     const checkExistingCampaign = async () => {
       try {
@@ -23,7 +22,6 @@ const CampaignsPage: React.FC = () => {
         setExistingCampaign(response.data);
         setIsUpdateMode(true);
       } catch (err) {
-        // If 404 or error, show create form
         setIsUpdateMode(false);
         setExistingCampaign(null);
       } finally {
@@ -45,7 +43,6 @@ const CampaignsPage: React.FC = () => {
   };
 
   const handleCampaignCreated = () => {
-    // Refresh to show update mode
     window.location.reload();
   };
 
@@ -87,6 +84,29 @@ const CampaignsPage: React.FC = () => {
           onError={handleError}
           onCreated={handleCampaignCreated}
         />
+      )}
+
+      {/* iPhone Inventory */}
+      {existingCampaign && (
+        <div className="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 className="text-lg font-semibold mb-4">iPhone Inventory</h2>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-blue-50 p-4 rounded-lg text-center">
+              <p className="text-sm text-gray-600">Total iPhones</p>
+              <p className="text-2xl font-bold text-blue-600">{existingCampaign.policy.total_reward}</p>
+            </div>
+            <div className="bg-orange-50 p-4 rounded-lg text-center">
+              <p className="text-sm text-gray-600">Winners So Far</p>
+              <p className="text-2xl font-bold text-orange-600">{winners.length}</p>
+            </div>
+            <div className="bg-green-50 p-4 rounded-lg text-center">
+              <p className="text-sm text-gray-600">iPhones Left</p>
+              <p className="text-2xl font-bold text-green-600">
+                {existingCampaign.policy.total_reward - winners.length}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Get Winners */}

@@ -15,7 +15,6 @@ type service struct {
 	atomicExecutor atomicity.AtomicExecutor
 }
 
-// NewOrderService creates a new order service
 func NewOrderService(orderRepo secondary.OrderRepository, atomicExecutor atomicity.AtomicExecutor) primary.OrderService {
 	return &service{
 		orderRepo:      orderRepo,
@@ -23,7 +22,6 @@ func NewOrderService(orderRepo secondary.OrderRepository, atomicExecutor atomici
 	}
 }
 
-// CreateOrder creates a new order
 func (s *service) CreateOrder(ctx context.Context, input order.Order) (order.Order, error) {
 	errTemplate := "orderService CreateOrder %w"
 	savedOrder, err := s.orderRepo.Create(ctx, input)

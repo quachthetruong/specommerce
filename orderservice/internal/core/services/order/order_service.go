@@ -22,7 +22,6 @@ type service struct {
 	logger            *slog.Logger
 }
 
-// NewOrderService creates a new order service
 func NewOrderService(orderRepo secondary.OrderRepository, paymentPublisher secondary.PaymentRepository, atomicExecutor atomicity.AtomicExecutor,
 	campaignPublisher secondary.CampaignRepository, logger *slog.Logger) primary.OrderService {
 	return &service{

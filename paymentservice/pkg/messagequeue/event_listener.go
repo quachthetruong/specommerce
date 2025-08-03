@@ -61,7 +61,6 @@ func (l *BaseEventListener) Start(cfg service_config.KafkaConfig, handlerFunc Ha
 		},
 	)
 	for loop {
-		//NOTE: this auto committed after fetch message -> need to re-consider
 		message, err := reader.ReadMessage(context.Background())
 		if err != nil {
 			l.logger.Error("Failed to read message from Kafka", slog.String("error", err.Error()))

@@ -6,7 +6,6 @@ import (
 	orderHandler "specommerce/orderservice/internal/adapters/primary/order/handler"
 )
 
-// Route for admin user
 func adminRoutes(routerGroup *gin.RouterGroup, injector do.Injector) {
 	order := do.MustInvoke[orderHandler.OrderHandler](injector)
 

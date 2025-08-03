@@ -22,7 +22,6 @@ import (
 func NewInjector() do.Injector {
 	injector := do.New()
 
-	// Core dependencies
 	do.Provide(injector, NewCampaignRepository)
 	do.Provide(injector, NewCampaignService)
 	do.Provide(injector, NewCampaignHandler)
@@ -30,11 +29,9 @@ func NewInjector() do.Injector {
 	do.Provide(injector, NewOrderRepository)
 	do.Provide(injector, NewOrderService)
 
-	// Messaging dependencies
 	do.Provide(injector, NewPublisher)
 	do.Provide(injector, NewOrderSuccessConsumer)
 
-	// Base infrastructure
 	do.Provide(injector, NewBaseEventListener)
 
 	return injector

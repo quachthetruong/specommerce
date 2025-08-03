@@ -85,7 +85,6 @@ const (
 func createOrder(client *http.Client, order CreateOrderRequest, wg *sync.WaitGroup, orderNum int) {
 	defer wg.Done()
 	
-	// Random sleep between 3-10 seconds
 	sleepDuration := time.Duration(3+rand.Intn(8)) * time.Second
 	time.Sleep(sleepDuration)
 	
@@ -120,7 +119,6 @@ func main() {
 
 	client := &http.Client{Timeout: 30 * time.Second}
 	
-	// Create a semaphore to limit concurrency
 	semaphore := make(chan struct{}, maxConcurrency)
 
 	var belowTransactions []CreateOrderRequest
@@ -183,7 +181,6 @@ func main() {
 
 	fmt.Printf("Starting %d orders with max %d concurrent requests...\n", len(allOrders), maxConcurrency)
 	
-	// Launch all orders with concurrency limit
 	for i, order := range allOrders {
 		wg.Add(1)
 		go func(ord CreateOrderRequest, orderNum int) {
