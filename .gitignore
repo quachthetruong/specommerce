@@ -1,0 +1,117 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go build program
+*.out
+
+# Go workspace file
+go.work
+
+# Go modules
+go.sum
+
+# Go build artifacts
+*/build/
+*/*-server
+orderservice/order-server
+paymentservice/payment-server
+campaignservice/campaign-server
+
+# Dependency directories (remove the comment below to include it)
+vendor/
+
+# Go coverage files
+*.cover
+*.coverprofile
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# React build outputs
+adminportal/build/
+adminportal/dist/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+logs/
+adminportal/app.log
+orderservice/*.log
+paymentservice/*.log
+campaignservice/*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker volumes
+docker-compose.override.yml
+
+# Temporary files
+tmp/
+temp/
+
+# Protocol buffer generated files
+*.pb.go
+
+# Swagger generated files
+docs/swagger/
+
+# Migration backup files
+*.bak
+
+# Mac specific
+.AppleDouble
+.LSOverride
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux specific
+*~
+.nfs*
