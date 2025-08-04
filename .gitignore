@@ -17,9 +17,9 @@ go.work
 # Go modules
 go.sum
 
-# Go build artifacts
-*/build/
-**/build/
+# Go build artifacts (binaries only, keep build directories)
+# */build/
+# **/build/
 
 # Dependency directories (remove the comment below to include it)
 vendor/
@@ -51,7 +51,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # React build outputs
-adminportal/build/
+# adminportal/build/
 adminportal/dist/
 
 # Environment variables
