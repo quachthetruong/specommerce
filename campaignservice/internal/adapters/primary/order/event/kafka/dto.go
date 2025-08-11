@@ -8,7 +8,7 @@ import (
 )
 
 func ToDomain(event model.Order) (domain.Order, error) {
-	errTemplate := "OrderSuccessConsumer.ToDomain: %w"
+	errTemplate := "OrderConsumer.ToDomain: %w"
 	orderId, err := xid.FromString(event.Id)
 	if err != nil {
 		return domain.Order{}, fmt.Errorf(errTemplate, err)

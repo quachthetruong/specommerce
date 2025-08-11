@@ -6,5 +6,5 @@ import (
 )
 
 type CampaignRepository interface {
-	SendOrderSuccessEvent(ctx context.Context, input order.Order) error
+	SendOrderEvent(ctx context.Context, input order.Order) error
 }

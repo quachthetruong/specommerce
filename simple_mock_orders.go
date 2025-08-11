@@ -84,10 +84,10 @@ const (
 
 func createOrder(client *http.Client, order CreateOrderRequest, wg *sync.WaitGroup, orderNum int) {
 	defer wg.Done()
-	
-	sleepDuration := time.Duration(3+rand.Intn(8)) * time.Second
+
+	sleepDuration := time.Duration(2000+rand.Intn(8000)) * time.Millisecond
 	time.Sleep(sleepDuration)
-	
+
 	jsonData, _ := json.Marshal(order)
 	req, _ := http.NewRequest("POST", orderServiceURL, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
@@ -101,7 +101,6 @@ func createOrder(client *http.Client, order CreateOrderRequest, wg *sync.WaitGro
 
 	fmt.Printf("Order #%d - %d %s: $%.2f (waited %.1fs)\n", orderNum, resp.StatusCode, order.CustomerID, order.TotalAmount, sleepDuration.Seconds())
 }
-
 
 // Step 1: Create two separate lists of transactions with proper ratios
 // Step 2: Generate 400 transactions below $200 and 100 transactions between $200 and $400
@@ -118,7 +117,7 @@ func main() {
 	fmt.Println(strings.Repeat("=", 50))
 
 	client := &http.Client{Timeout: 30 * time.Second}
-	
+
 	semaphore := make(chan struct{}, maxConcurrency)
 
 	var belowTransactions []CreateOrderRequest
@@ -180,11 +179,11 @@ func main() {
 	start := time.Now()
 
 	fmt.Printf("Starting %d orders with max %d concurrent requests...\n", len(allOrders), maxConcurrency)
-	
+
 	for i, order := range allOrders {
 		wg.Add(1)
 		go func(ord CreateOrderRequest, orderNum int) {
-			semaphore <- struct{}{} // Acquire semaphore
+			semaphore <- struct{}{}        // Acquire semaphore
 			defer func() { <-semaphore }() // Release semaphore
 			createOrder(client, ord, &wg, orderNum)
 		}(order, i+1)

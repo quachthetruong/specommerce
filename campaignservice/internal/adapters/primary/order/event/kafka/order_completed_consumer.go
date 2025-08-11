@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"google.golang.org/protobuf/proto"
 	"log/slog"
+	domain "specommerce/campaignservice/internal/core/domain/order"
 	"specommerce/campaignservice/internal/core/ports/primary"
 	"specommerce/campaignservice/model"
 
@@ -13,31 +14,31 @@ import (
 	"specommerce/campaignservice/pkg/service_config"
 )
 
-type OrderSuccessConsumer struct {
+type OrderConsumer struct {
 	baseListener *messagequeue.BaseEventListener
 	config       service_config.KafkaConfig
 	orderService primary.OrderService
 }
 
-func NewOrderSuccessConsumer(
+func NewOrderConsumer(
 	baseListener *messagequeue.BaseEventListener,
 	cfg service_config.KafkaConfig,
 	orderService primary.OrderService,
-) *OrderSuccessConsumer {
-	return &OrderSuccessConsumer{
+) *OrderConsumer {
+	return &OrderConsumer{
 		baseListener: baseListener,
 		config:       cfg,
 		orderService: orderService,
 	}
 }
 
-func (c *OrderSuccessConsumer) Start() error {
+func (c *OrderConsumer) Start() error {
 	return c.baseListener.Start(c.config, c.handleEvent)
 }
 
-func (c *OrderSuccessConsumer) handleEvent(message kafka.Message) error {
-	errorTemplate := "OrderSuccessConsumer.handleEvent: %w"
-	c.baseListener.Logger().Info("Received order success event",
+func (c *OrderConsumer) handleEvent(message kafka.Message) error {
+	errorTemplate := "OrderConsumer.handleEvent: %w"
+	c.baseListener.Logger().Info("Received order event",
 		slog.String("topic", message.Topic),
 		slog.String("key", string(message.Key)),
 	)
@@ -47,23 +48,38 @@ func (c *OrderSuccessConsumer) handleEvent(message kafka.Message) error {
 		return fmt.Errorf(errorTemplate, err)
 	}
 
-	domainOrder, err := ToDomain(orderEvent)
+	order, err := ToDomain(orderEvent)
 	if err != nil {
 		return fmt.Errorf(errorTemplate, err)
 	}
 
 	ctx := context.Background()
 
-	savedOrder, err := c.orderService.CreateOrder(ctx, domainOrder)
+	if order.Status == domain.OrderStatusPending {
+		pendingOrderCnt, err := c.orderService.ProcessPendingOrder(ctx, order)
+		if err != nil {
+			return fmt.Errorf(errorTemplate, err)
+		}
+		c.baseListener.Logger().Info("Processed pending order",
+			slog.String("order_id", order.Id.String()),
+			slog.String("customer_id", order.CustomerId),
+			slog.Float64("total_amount", order.TotalAmount),
+			slog.String("status", order.Status.String()),
+			slog.Int64("pending_order_count", pendingOrderCnt),
+		)
+		return nil
+	}
+	winnerCnt, err := c.orderService.ProcessOrderResult(ctx, order)
 	if err != nil {
 		return fmt.Errorf(errorTemplate, err)
 	}
 
-	c.baseListener.Logger().Info("Processed order success event successfully",
-		slog.String("order_id", savedOrder.Id.String()),
-		slog.String("customer_id", domainOrder.CustomerId),
-		slog.Float64("total_amount", domainOrder.TotalAmount),
-		slog.String("status", domainOrder.Status.String()),
+	c.baseListener.Logger().Info("Processed order event successfully",
+		slog.String("order_id", order.Id.String()),
+		slog.String("customer_id", order.CustomerId),
+		slog.Float64("total_amount", order.TotalAmount),
+		slog.String("status", order.Status.String()),
+		slog.Int64("winner_count", winnerCnt),
 	)
 
 	return nil

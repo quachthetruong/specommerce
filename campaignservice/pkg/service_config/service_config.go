@@ -32,3 +32,10 @@ type RestServiceConfig struct {
 	Port int    `koanf:"port" yaml:"port" required:"true"`
 	Name string `koanf:"name" yaml:"name" required:"true"`
 }
+
+type RedisConfig struct {
+	Host     string `koanf:"host"`
+	Port     int    `koanf:"port"`
+	Password string `koanf:"password"`
+	DB       int    `koanf:"db"`
+}

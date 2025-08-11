@@ -28,3 +28,9 @@ orderSuccess:
   autoCreateTopic: true
 
 iphoneCampaign: iphone
+
+redis:
+  host: localhost
+  port: 6379
+  password: ""
+  db: 0

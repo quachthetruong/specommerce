@@ -14,6 +14,7 @@ import (
 	orderService "specommerce/campaignservice/internal/core/services/order"
 
 	"specommerce/campaignservice/pkg/atomicity"
+	"specommerce/campaignservice/pkg/cache"
 	"specommerce/campaignservice/pkg/database"
 	"specommerce/campaignservice/pkg/messagequeue"
 	"specommerce/campaignservice/pkg/shutdown"
@@ -30,9 +31,10 @@ func NewInjector() do.Injector {
 	do.Provide(injector, NewOrderService)
 
 	do.Provide(injector, NewPublisher)
-	do.Provide(injector, NewOrderSuccessConsumer)
+	do.Provide(injector, NewOrderConsumer)
 
 	do.Provide(injector, NewBaseEventListener)
+	do.Provide(injector, NewRedisClient)
 
 	return injector
 }
@@ -46,10 +48,12 @@ func NewCampaignService(injector do.Injector) (primary.CampaignService, error) {
 	campaignRepository := do.MustInvoke[secondary.CampaignRepository](injector)
 	atomicExecutor := do.MustInvoke[atomicity.AtomicExecutor](injector)
 	cfg := do.MustInvoke[config.AppConfig](injector)
+	cacheClient := do.MustInvoke[cache.Cache](injector)
 	return campaignService.NewCampaignService(
 		campaignRepository,
 		atomicExecutor,
 		cfg,
+		cacheClient,
 	), nil
 }
 
@@ -63,9 +67,13 @@ func NewOrderRepository(injector do.Injector) (secondary.OrderRepository, error)
 func NewOrderService(injector do.Injector) (primary.OrderService, error) {
 	orderRepository := do.MustInvoke[secondary.OrderRepository](injector)
 	atomicExecutor := do.MustInvoke[atomicity.AtomicExecutor](injector)
+	cacheClient := do.MustInvoke[cache.Cache](injector)
+	cfg := do.MustInvoke[config.AppConfig](injector)
 	return orderService.NewOrderService(
 		orderRepository,
 		atomicExecutor,
+		cacheClient,
+		cfg,
 	), nil
 }
 
@@ -87,9 +95,15 @@ func NewBaseEventListener(injector do.Injector) (*messagequeue.BaseEventListener
 	return messagequeue.NewBaseEventListener(tasks, logger), nil
 }
 
-func NewOrderSuccessConsumer(injector do.Injector) (*orderConsumer.OrderSuccessConsumer, error) {
+func NewOrderConsumer(injector do.Injector) (*orderConsumer.OrderConsumer, error) {
 	cfg := do.MustInvoke[config.AppConfig](injector)
 	orderService := do.MustInvoke[primary.OrderService](injector)
 	baseEventListener := do.MustInvoke[*messagequeue.BaseEventListener](injector)
-	return orderConsumer.NewOrderSuccessConsumer(baseEventListener, cfg.OrderSuccess, orderService), nil
+	return orderConsumer.NewOrderConsumer(baseEventListener, cfg.OrderSuccess, orderService), nil
+}
+
+func NewRedisClient(injector do.Injector) (cache.Cache, error) {
+	tasks := do.MustInvoke[*shutdown.Tasks](injector)
+	cfg := do.MustInvoke[config.AppConfig](injector)
+	return cache.NewRedisClient(cfg.Redis, tasks), nil
 }

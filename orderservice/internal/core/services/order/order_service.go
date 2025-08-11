@@ -60,6 +60,16 @@ func (s *service) CreateOrder(ctx context.Context, input order.Order) (order.Ord
 			return nil
 		},
 	)
+	go func() {
+		err := s.campaignPublisher.SendOrderEvent(ctx, input)
+		if err != nil {
+			s.logger.Error(
+				"failed to send order event to campaign service",
+				slog.String("order_id", input.Id.String()),
+				slog.String("error", err.Error()),
+			)
+		}
+	}()
 	if txErr != nil {
 		return order.Order{}, fmt.Errorf(errTemplate, txErr)
 	}
@@ -96,14 +106,11 @@ func (s *service) ProcessPaymentResponse(ctx context.Context, input payment.Proc
 	if txErr != nil {
 		return order.Order{}, fmt.Errorf(errTemplate, txErr)
 	}
-	if orderResponse.Status != order.OrderStatusSuccess {
-		return orderResponse, nil
-	}
 	go func() {
-		err := s.campaignPublisher.SendOrderSuccessEvent(ctx, orderResponse)
+		err := s.campaignPublisher.SendOrderEvent(ctx, orderResponse)
 		if err != nil {
 			s.logger.Error(
-				"failed to send order success event to campaign service",
+				"failed to send order event to campaign service",
 				slog.String("order_id", orderResponse.Id.String()),
 				slog.String("error", err.Error()),
 			)

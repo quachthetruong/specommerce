@@ -45,7 +45,7 @@ func Run(logger *slog.Logger, tasks *shutdown.Tasks) error {
 			return server.ServeHTTP(injector)
 		})
 
-	orderSuccessConsumer := do.MustInvoke[*orderConsumer.OrderSuccessConsumer](injector)
+	orderSuccessConsumer := do.MustInvoke[*orderConsumer.OrderConsumer](injector)
 
 	eg.Go(func() error {
 		return orderSuccessConsumer.Start()

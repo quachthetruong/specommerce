@@ -18,8 +18,8 @@ type campaignPublisher struct {
 	publisher messagequeue.Publisher
 }
 
-func (p *campaignPublisher) SendOrderSuccessEvent(ctx context.Context, input order.Order) error {
-	errTemplate := "campaignPublisher SendOrderSuccessEvent failed: %v"
+func (p *campaignPublisher) SendOrderEvent(ctx context.Context, input order.Order) error {
+	errTemplate := "campaignPublisher SendOrderEvent failed: %v"
 
 	payload, err := proto.Marshal(&model.Order{
 		Id:           input.Id.String(),

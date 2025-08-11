@@ -9,4 +9,5 @@ type AppConfig struct {
 	Kafka          service_config.KafkaConfig       `koanf:"messagequeue"`
 	OrderSuccess   service_config.KafkaConfig       `koanf:"orderSuccess"`
 	IphoneCampaign string                           `koanf:"iphoneCampaign"`
+	Redis          service_config.RedisConfig       `koanf:"redis"`
 }
