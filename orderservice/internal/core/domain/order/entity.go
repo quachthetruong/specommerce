@@ -15,6 +15,10 @@ const (
 	OrderStatusFailed     OrderStatus = "FAILED"
 )
 
+type CreateOrderRequest struct {
+	Order       Order
+	TimeProcess int64
+}
 type Order struct {
 	Id           xid.ID      `json:"id" bun:"id,pk,skipupdate"`
 	CustomerId   string      `json:"customer_id" bun:"customer_id"`

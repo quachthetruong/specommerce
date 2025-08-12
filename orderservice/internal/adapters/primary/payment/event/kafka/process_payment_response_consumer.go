@@ -62,7 +62,7 @@ func (c *ProcessPaymentResponseConsumer) handleEvent(message kafka.Message) erro
 		return fmt.Errorf(errorTemplate, err)
 	}
 
-	c.baseListener.Logger().Info("Processed payment request successfully",
+	c.baseListener.Logger().Info("Processed payment response successfully",
 		slog.String("payment_id", request.PaymentId),
 		slog.String("order_id", successPayment.Id.String()),
 		slog.Float64("total_amount", successPayment.TotalAmount),

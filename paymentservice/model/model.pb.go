@@ -21,16 +21,12 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// ProcessPaymentRequest represents a request to process payment for an order
-// Contains the same information as domain Order
 type ProcessPaymentRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Order ID
-	OrderId string `protobuf:"bytes,1,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
-	// Customer ID
-	CustomerId string `protobuf:"bytes,2,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
-	// Total amount to be paid
-	TotalAmount   float64 `protobuf:"fixed64,3,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OrderId       string                 `protobuf:"bytes,1,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
+	CustomerId    string                 `protobuf:"bytes,2,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
+	TotalAmount   float64                `protobuf:"fixed64,3,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	TimeProcess   int64                  `protobuf:"varint,4,opt,name=time_process,json=timeProcess,proto3" json:"time_process,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -86,17 +82,20 @@ func (x *ProcessPaymentRequest) GetTotalAmount() float64 {
 	return 0
 }
 
+func (x *ProcessPaymentRequest) GetTimeProcess() int64 {
+	if x != nil {
+		return x.TimeProcess
+	}
+	return 0
+}
+
 type ProcessPaymentResponse struct {
-	state     protoimpl.MessageState `protogen:"open.v1"`
-	PaymentId string                 `protobuf:"bytes,1,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
-	// Order ID
-	OrderId string `protobuf:"bytes,2,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
-	// Customer ID
-	CustomerId string `protobuf:"bytes,3,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
-	// Total amount to be paid
-	TotalAmount float64 `protobuf:"fixed64,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
-	// Payment status
-	PaymentStatus string `protobuf:"bytes,5,opt,name=payment_status,json=paymentStatus,proto3" json:"payment_status,omitempty"`
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PaymentId     string                 `protobuf:"bytes,1,opt,name=payment_id,json=paymentId,proto3" json:"payment_id,omitempty"`
+	OrderId       string                 `protobuf:"bytes,2,opt,name=order_id,json=orderId,proto3" json:"order_id,omitempty"`
+	CustomerId    string                 `protobuf:"bytes,3,opt,name=customer_id,json=customerId,proto3" json:"customer_id,omitempty"`
+	TotalAmount   float64                `protobuf:"fixed64,4,opt,name=total_amount,json=totalAmount,proto3" json:"total_amount,omitempty"`
+	PaymentStatus string                 `protobuf:"bytes,5,opt,name=payment_status,json=paymentStatus,proto3" json:"payment_status,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -170,12 +169,13 @@ var File_model_model_proto protoreflect.FileDescriptor
 
 const file_model_model_proto_rawDesc = "" +
 	"\n" +
-	"\x11model/model.proto\x12\x05kafka\"v\n" +
+	"\x11model/model.proto\x12\x05kafka\"\x99\x01\n" +
 	"\x15ProcessPaymentRequest\x12\x19\n" +
 	"\border_id\x18\x01 \x01(\tR\aorderId\x12\x1f\n" +
 	"\vcustomer_id\x18\x02 \x01(\tR\n" +
 	"customerId\x12!\n" +
-	"\ftotal_amount\x18\x03 \x01(\x01R\vtotalAmount\"\xbd\x01\n" +
+	"\ftotal_amount\x18\x03 \x01(\x01R\vtotalAmount\x12!\n" +
+	"\ftime_process\x18\x04 \x01(\x03R\vtimeProcess\"\xbd\x01\n" +
 	"\x16ProcessPaymentResponse\x12\x1d\n" +
 	"\n" +
 	"payment_id\x18\x01 \x01(\tR\tpaymentId\x12\x19\n" +

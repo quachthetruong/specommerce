@@ -38,12 +38,13 @@ func NewOrderService(orderRepo secondary.OrderRepository, paymentPublisher secon
 // Step 2: Send a payment request to the payment service
 // Step 3: If sending the payment request is successful, update the order status to Processing
 // TODO: Put all the steps in a workflow or saga pattern
-func (s *service) CreateOrder(ctx context.Context, input order.Order) (order.Order, error) {
+func (s *service) CreateOrder(ctx context.Context, input order.CreateOrderRequest) (order.Order, error) {
 	errTemplate := "orderService CreateOrder %w"
 	var orderId xid.ID
+
 	txErr := s.atomicExecutor.Execute(
 		ctx, func(tc context.Context) error {
-			pendingOrder, err := s.orderRepo.Create(ctx, input)
+			pendingOrder, err := s.orderRepo.Create(ctx, input.Order)
 			if err != nil {
 				return err
 			}
@@ -52,6 +53,7 @@ func (s *service) CreateOrder(ctx context.Context, input order.Order) (order.Ord
 				OrderId:     pendingOrder.Id,
 				CustomerId:  pendingOrder.CustomerId,
 				TotalAmount: pendingOrder.TotalAmount,
+				TimeProcess: input.TimeProcess,
 			})
 			if err != nil {
 				return err
@@ -60,16 +62,14 @@ func (s *service) CreateOrder(ctx context.Context, input order.Order) (order.Ord
 			return nil
 		},
 	)
-	go func() {
-		err := s.campaignPublisher.SendOrderEvent(ctx, input)
-		if err != nil {
-			s.logger.Error(
-				"failed to send order event to campaign service",
-				slog.String("order_id", input.Id.String()),
-				slog.String("error", err.Error()),
-			)
-		}
-	}()
+	err := s.campaignPublisher.SendOrderEvent(ctx, input.Order)
+	if err != nil {
+		s.logger.Error(
+			"failed to send order event to campaign service",
+			slog.String("order_id", input.Order.Id.String()),
+			slog.String("error", err.Error()),
+		)
+	}
 	if txErr != nil {
 		return order.Order{}, fmt.Errorf(errTemplate, txErr)
 	}
@@ -106,16 +106,14 @@ func (s *service) ProcessPaymentResponse(ctx context.Context, input payment.Proc
 	if txErr != nil {
 		return order.Order{}, fmt.Errorf(errTemplate, txErr)
 	}
-	go func() {
-		err := s.campaignPublisher.SendOrderEvent(ctx, orderResponse)
-		if err != nil {
-			s.logger.Error(
-				"failed to send order event to campaign service",
-				slog.String("order_id", orderResponse.Id.String()),
-				slog.String("error", err.Error()),
-			)
-		}
-	}()
+	err := s.campaignPublisher.SendOrderEvent(ctx, orderResponse)
+	if err != nil {
+		s.logger.Error(
+			"failed to send order event to campaign service",
+			slog.String("order_id", orderResponse.Id.String()),
+			slog.String("error", err.Error()),
+		)
+	}
 
 	return orderResponse, nil
 }

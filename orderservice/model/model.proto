@@ -9,6 +9,7 @@ message ProcessPaymentRequest {
   string order_id = 1;
   string customer_id = 2;
   double total_amount = 3;
+  int64  time_process = 4;
 }
 
 message ProcessPaymentResponse {

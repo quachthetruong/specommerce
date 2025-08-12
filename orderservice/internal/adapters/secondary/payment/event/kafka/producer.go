@@ -24,6 +24,7 @@ func (p *paymentPublisher) SendPaymentRequest(ctx context.Context, input domain.
 		OrderId:     input.OrderId.String(),
 		TotalAmount: input.TotalAmount,
 		CustomerId:  input.CustomerId,
+		TimeProcess: input.TimeProcess,
 	})
 
 	if err != nil {

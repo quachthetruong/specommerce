@@ -13,18 +13,22 @@ type CreateOrderRequest struct {
 	CustomerId   string  `json:"customer_id" binding:"required"`
 	CustomerName string  `json:"customer_name" binding:"required"`
 	TotalAmount  float64 `json:"total_amount" binding:"required"`
+	TimeProcess  int64   `json:"time_process" binding:"required" default:"2"`
 }
 
 // ToOrder converts CreateOrderRequest to domain Order
-func (r *CreateOrderRequest) ToDomain() domain.Order {
-	return domain.Order{
-		Id:           xid.New(),
-		CustomerId:   r.CustomerId,
-		CustomerName: r.CustomerName,
-		Status:       domain.OrderStatusPending,
-		TotalAmount:  r.TotalAmount,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+func (r *CreateOrderRequest) ToDomain() domain.CreateOrderRequest {
+	return domain.CreateOrderRequest{
+		Order: domain.Order{
+			Id:           xid.New(),
+			CustomerId:   r.CustomerId,
+			CustomerName: r.CustomerName,
+			Status:       domain.OrderStatusPending,
+			TotalAmount:  r.TotalAmount,
+			CreatedAt:    time.Now(),
+			UpdatedAt:    time.Now(),
+		},
+		TimeProcess: r.TimeProcess,
 	}
 }
 

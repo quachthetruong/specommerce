@@ -7,6 +7,6 @@ import (
 
 // OrderService defines the primary port for order operations
 type OrderService interface {
-	ProcessPendingOrder(ctx context.Context, order order.Order) (int64, error)
-	ProcessOrderResult(ctx context.Context, order order.Order) (int64, error)
+	ProcessPendingOrder(ctx context.Context, order order.Order) error
+	ProcessOrderResult(ctx context.Context, order order.Order) error
 }

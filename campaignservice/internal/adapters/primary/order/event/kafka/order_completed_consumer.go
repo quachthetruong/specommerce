@@ -56,7 +56,7 @@ func (c *OrderConsumer) handleEvent(message kafka.Message) error {
 	ctx := context.Background()
 
 	if order.Status == domain.OrderStatusPending {
-		pendingOrderCnt, err := c.orderService.ProcessPendingOrder(ctx, order)
+		err = c.orderService.ProcessPendingOrder(ctx, order)
 		if err != nil {
 			return fmt.Errorf(errorTemplate, err)
 		}
@@ -65,11 +65,10 @@ func (c *OrderConsumer) handleEvent(message kafka.Message) error {
 			slog.String("customer_id", order.CustomerId),
 			slog.Float64("total_amount", order.TotalAmount),
 			slog.String("status", order.Status.String()),
-			slog.Int64("pending_order_count", pendingOrderCnt),
 		)
 		return nil
 	}
-	winnerCnt, err := c.orderService.ProcessOrderResult(ctx, order)
+	err = c.orderService.ProcessOrderResult(ctx, order)
 	if err != nil {
 		return fmt.Errorf(errorTemplate, err)
 	}
@@ -79,7 +78,6 @@ func (c *OrderConsumer) handleEvent(message kafka.Message) error {
 		slog.String("customer_id", order.CustomerId),
 		slog.Float64("total_amount", order.TotalAmount),
 		slog.String("status", order.Status.String()),
-		slog.Int64("winner_count", winnerCnt),
 	)
 
 	return nil
