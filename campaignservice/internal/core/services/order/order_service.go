@@ -15,6 +15,7 @@ package order
 import (
 	"context"
 	"fmt"
+	"log"
 	"specommerce/campaignservice/config"
 	"specommerce/campaignservice/internal/core/domain/order"
 	"specommerce/campaignservice/internal/core/ports/primary"
@@ -26,14 +27,16 @@ import (
 // OrderService implements the order business logic
 type service struct {
 	orderRepo      secondary.OrderRepository
+	campaignRepo   secondary.CampaignRepository
 	atomicExecutor atomicity.AtomicExecutor
 	cacheClient    cache.Cache
 	config         config.AppConfig
 }
 
-func NewOrderService(orderRepo secondary.OrderRepository, atomicExecutor atomicity.AtomicExecutor, cacheClient cache.Cache, config config.AppConfig) primary.OrderService {
+func NewOrderService(orderRepo secondary.OrderRepository, campaignRepo secondary.CampaignRepository, atomicExecutor atomicity.AtomicExecutor, cacheClient cache.Cache, config config.AppConfig) primary.OrderService {
 	return &service{
 		orderRepo:      orderRepo,
+		campaignRepo:   campaignRepo,
 		atomicExecutor: atomicExecutor,
 		cacheClient:    cacheClient,
 		config:         config,
@@ -135,10 +138,12 @@ func (s *service) ProcessOrderResult(ctx context.Context, order order.Order) err
 		local policy_min_order_amount = tonumber(redis.call('HGET', campaign_key, 'policy_min_order_amount')) or 0
 		local policy_max_tracked_orders = tonumber(redis.call('HGET', campaign_key, 'policy_max_tracked_orders')) or 0
 		local has_new_winner = false
+		local is_campaign_finished = false
 
 		local winners_count = redis.call('SCARD', winners_key)
 		if winners_count == policy_total_reward then
-			return {has_new_winner, winners_count}
+			is_campaign_finished = true
+			return {has_new_winner, is_campaign_finished}
 		end
 
 		local current_order_id_key = transaction_key .. ':' .. order_id
@@ -158,13 +163,14 @@ func (s *service) ProcessOrderResult(ctx context.Context, order order.Order) err
 		local function recursive_pop() 
 			local winners_count = redis.call('SCARD', winners_key)
             if winners_count == policy_total_reward then
-                return {has_new_winner, winners_count}
+				is_campaign_finished = true
+                return {has_new_winner, is_campaign_finished}
 			end
 
 			local elements = redis.call('ZRANGE', pending_orders_key, 0, 0, 'WITHSCORES')
 			
 			if #elements == 0 then
-				return {has_new_winner, winners_count}
+				return {has_new_winner, is_campaign_finished}
 			end
 			
 			local current_order_id = elements[1]
@@ -173,7 +179,7 @@ func (s *service) ProcessOrderResult(ctx context.Context, order order.Order) err
 			local current_customer_id_key = customer_key .. ':' .. current_customer_id
 			local current_status = redis.call('HGET', current_order_id_key, 'status')
             if current_status == 'PENDING' then
-				return {has_new_winner, winners_count}
+				return {has_new_winner, is_campaign_finished}
 			end
 
 			redis.call('ZREM', pending_orders_key, current_order_id)
@@ -205,10 +211,61 @@ func (s *service) ProcessOrderResult(ctx context.Context, order order.Order) err
 		return recursive_pop()  -- Start the recursion
 	`
 	campaignKey := fmt.Sprintf("campaign:%s", s.config.IphoneCampaign)
-	_, err := s.cacheClient.Eval(ctx, luaScript, []string{order.CustomerId}, order.Id.String(), order.Status.String(), order.TotalAmount, campaignKey)
+	result, err := s.cacheClient.Eval(ctx, luaScript, []string{order.CustomerId}, order.Id.String(), order.Status.String(), order.TotalAmount, campaignKey)
 	if err != nil {
 		return fmt.Errorf(errTemplate, err)
 	}
 
+	// Parse Lua script result: [has_new_winner, is_campaign_finished]
+	if resultArray, ok := result.([]interface{}); ok && len(resultArray) == 2 {
+		// Redis Lua returns booleans as integers: 1 = true, 0 = false
+		hasNewWinner := false
+		isCampaignFinished := false
+
+		if val, ok := resultArray[0].(int64); ok && val == 1 {
+			hasNewWinner = true
+		}
+		if val, ok := resultArray[1].(int64); ok && val == 1 {
+			isCampaignFinished = true
+		}
+
+		log.Printf("Lua result: has_new_winner=%v, is_campaign_finished=%v", hasNewWinner, isCampaignFinished)
+
+		if hasNewWinner && isCampaignFinished {
+			campaign, err := s.campaignRepo.GetCampaignByType(ctx, "iphone")
+			if err != nil {
+				return fmt.Errorf(errTemplate, err)
+			}
+
+			// Get all winners from Redis campaign_winners set
+			winners, err := s.cacheClient.SMembers(ctx, "campaign_winners")
+			if err != nil {
+				return fmt.Errorf(errTemplate, err)
+			}
+
+			log.Printf("Campaign finished! All winners: %v", winners)
+
+			// Save all winners to database
+			for _, customerID := range winners {
+				err := s.campaignRepo.SaveWinner(ctx, campaign.Id, customerID)
+				if err != nil {
+					log.Printf("Failed to save winner %s: %v", customerID, err)
+					// Continue with other winners even if one fails
+				} else {
+					log.Printf("Successfully saved winner: %s", customerID)
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *service) SaveSuccessOrder(ctx context.Context, input order.Order) error {
+	errTemplate := "orderService SaveSuccessOrder %w"
+	_, err := s.orderRepo.Create(ctx, input)
+	if err != nil {
+		return fmt.Errorf(errTemplate, err)
+	}
 	return nil
 }

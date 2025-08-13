@@ -36,7 +36,7 @@ func (p *campaignPublisher) SendOrderEvent(ctx context.Context, input order.Orde
 	}
 
 	return p.publisher.Publish(kafkaGo.Message{
-		Topic: p.config.OrderSuccess.Topic,
+		Topic: p.config.OrderEvents.Topic,
 		Value: payload,
 		Key:   []byte(input.CustomerId),
 	})

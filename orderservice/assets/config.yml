@@ -34,9 +34,9 @@ processPaymentResponse:
   retry: 5
   autoCreateTopic: true
 
-orderSuccess:
+orderEvents:
   host: localhost:9093
-  topic: order_success
+  topic: order_events
   consumerGroup: order-service
   retry: 5
   autoCreateTopic: true

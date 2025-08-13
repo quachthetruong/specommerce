@@ -44,7 +44,7 @@ services:
     environment:
       - KRAFT_CONTAINER_HOST_NAME=kafka
       - KRAFT_PARTITIONS_PER_TOPIC=1
-      - KRAFT_CREATE_TOPICS=payment_process_request, payment_process_response, order_success
+      - KRAFT_CREATE_TOPICS=payment_process_request, payment_process_response, order_events
 
   kafka-ui:
     platform: linux/x86_64

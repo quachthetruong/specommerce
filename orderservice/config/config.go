@@ -9,5 +9,5 @@ type AppConfig struct {
 	Kafka                  service_config.KafkaConfig       `koanf:"messagequeue"`
 	ProcessPaymentRequest  service_config.KafkaConfig       `koanf:"processPaymentRequest"`
 	ProcessPaymentResponse service_config.KafkaConfig       `koanf:"processPaymentResponse"`
-	OrderSuccess           service_config.KafkaConfig       `koanf:"orderSuccess"`
+	OrderEvents            service_config.KafkaConfig       `koanf:"orderEvents"`
 }

@@ -32,6 +32,7 @@ func NewInjector() do.Injector {
 
 	do.Provide(injector, NewPublisher)
 	do.Provide(injector, NewOrderConsumer)
+	do.Provide(injector, NewSuccessOrderConsumer)
 
 	do.Provide(injector, NewBaseEventListener)
 	do.Provide(injector, NewRedisClient)
@@ -66,11 +67,13 @@ func NewOrderRepository(injector do.Injector) (secondary.OrderRepository, error)
 
 func NewOrderService(injector do.Injector) (primary.OrderService, error) {
 	orderRepository := do.MustInvoke[secondary.OrderRepository](injector)
+	campaignRepository := do.MustInvoke[secondary.CampaignRepository](injector)
 	atomicExecutor := do.MustInvoke[atomicity.AtomicExecutor](injector)
 	cacheClient := do.MustInvoke[cache.Cache](injector)
 	cfg := do.MustInvoke[config.AppConfig](injector)
 	return orderService.NewOrderService(
 		orderRepository,
+		campaignRepository,
 		atomicExecutor,
 		cacheClient,
 		cfg,
@@ -99,7 +102,14 @@ func NewOrderConsumer(injector do.Injector) (*orderConsumer.OrderConsumer, error
 	cfg := do.MustInvoke[config.AppConfig](injector)
 	orderService := do.MustInvoke[primary.OrderService](injector)
 	baseEventListener := do.MustInvoke[*messagequeue.BaseEventListener](injector)
-	return orderConsumer.NewOrderConsumer(baseEventListener, cfg.OrderSuccess, orderService), nil
+	return orderConsumer.NewOrderConsumer(baseEventListener, cfg.OrderConsumer, orderService), nil
+}
+
+func NewSuccessOrderConsumer(injector do.Injector) (*orderConsumer.SuccessOrderConsumer, error) {
+	cfg := do.MustInvoke[config.AppConfig](injector)
+	orderService := do.MustInvoke[primary.OrderService](injector)
+	baseEventListener := do.MustInvoke[*messagequeue.BaseEventListener](injector)
+	return orderConsumer.NewSuccessOrderConsumer(baseEventListener, cfg.OrderSuccess, orderService), nil
 }
 
 func NewRedisClient(injector do.Injector) (cache.Cache, error) {

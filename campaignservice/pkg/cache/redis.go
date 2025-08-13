@@ -15,6 +15,7 @@ type Cache interface {
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	Get(ctx context.Context, key string) (string, error)
 	Eval(ctx context.Context, script string, keys []string, args ...interface{}) (interface{}, error)
+	SMembers(ctx context.Context, key string) ([]string, error)
 }
 
 type RedisClient struct {
@@ -56,4 +57,8 @@ func (r *RedisClient) Get(ctx context.Context, key string) (string, error) {
 
 func (r *RedisClient) Eval(ctx context.Context, script string, keys []string, args ...interface{}) (interface{}, error) {
 	return r.client.Eval(ctx, script, keys, args...).Result()
+}
+
+func (r *RedisClient) SMembers(ctx context.Context, key string) ([]string, error) {
+	return r.client.SMembers(ctx, key).Result()
 }

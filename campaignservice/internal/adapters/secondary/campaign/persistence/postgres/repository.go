@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"fmt"
+	"github.com/rs/xid"
 	"github.com/uptrace/bun"
 	domain "specommerce/campaignservice/internal/core/domain/campaign"
 	"specommerce/campaignservice/internal/core/ports/secondary"
@@ -113,4 +114,18 @@ func (r *campaignPersistenceRepository) GetIphoneWinner(ctx context.Context, iph
 	}
 
 	return results, nil
+}
+
+func (r *campaignPersistenceRepository) SaveWinner(ctx context.Context, campaignId int64, customerId string) error {
+	errTemplate := "campaignPersistenceRepository SaveWinner %w"
+	winner := Winner{
+		Id:         xid.New().String(),
+		CampaignId: campaignId,
+		CustomerId: customerId,
+	}
+	_, err := database.NewPostgresCrudDatabaseOperation[Winner](r.getDbFunc).Create(ctx, winner)
+	if err != nil {
+		return fmt.Errorf(errTemplate, err)
+	}
+	return nil
 }

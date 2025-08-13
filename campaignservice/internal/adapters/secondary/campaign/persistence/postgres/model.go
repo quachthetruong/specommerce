@@ -19,6 +19,15 @@ type Campaign struct {
 	UpdatedAt     time.Time      `bun:",nullzero,notnull,default:current_timestamp"`
 }
 
+type Winner struct {
+	bun.BaseModel `bun:"winners"`
+	Id            string    `bun:"id,pk"`
+	CampaignId    int64     `bun:"campaign_id,notnull"`
+	CustomerId    string    `bun:"customer_id,notnull"`
+	CreatedAt     time.Time `bun:",nullzero,notnull,default:current_timestamp,skipupdate"`
+	UpdatedAt     time.Time `bun:",nullzero,notnull,default:current_timestamp"`
+}
+
 type IphoneWinner struct {
 	CustomerId          string    `bun:"customer_id,notnull"`
 	CustomerName        string    `bun:"customer_name,notnull"`

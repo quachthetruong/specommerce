@@ -20,10 +20,17 @@ kafka:
   consumerGroup: campaign-service
   topic: notification_topic
 
+orderEvents:
+  host: localhost:9093
+  topic: order_events
+  consumerGroup: campaign-order-consumer
+  retry: 5
+  autoCreateTopic: true
+
 orderSuccess:
   host: localhost:9093
   topic: order_success
-  consumerGroup: campaign-service
+  consumerGroup: campaign-success-consumer
   retry: 5
   autoCreateTopic: true
 

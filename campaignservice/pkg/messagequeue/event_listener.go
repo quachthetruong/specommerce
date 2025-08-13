@@ -12,6 +12,7 @@ import (
 
 type EventListener interface {
 	Start() error
+	HandleEvent(message kafka.Message) error
 }
 
 type HandlerFunc func(message kafka.Message) error

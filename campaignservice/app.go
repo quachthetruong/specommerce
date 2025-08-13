@@ -11,6 +11,7 @@ import (
 	"specommerce/campaignservice/pkg/atomicity"
 	"specommerce/campaignservice/pkg/database"
 	"specommerce/campaignservice/pkg/environment"
+	"specommerce/campaignservice/pkg/messagequeue"
 	"specommerce/campaignservice/pkg/service_config"
 	"specommerce/campaignservice/pkg/shutdown"
 	"specommerce/campaignservice/server"
@@ -45,11 +46,15 @@ func Run(logger *slog.Logger, tasks *shutdown.Tasks) error {
 			return server.ServeHTTP(injector)
 		})
 
-	orderSuccessConsumer := do.MustInvoke[*orderConsumer.OrderConsumer](injector)
+	orderListener := do.MustInvoke[*orderConsumer.OrderConsumer](injector)
+	successOrderListener := do.MustInvoke[*orderConsumer.SuccessOrderConsumer](injector)
 
-	eg.Go(func() error {
-		return orderSuccessConsumer.Start()
-	})
+	listeners := []messagequeue.EventListener{orderListener, successOrderListener}
+	for _, l := range listeners {
+		eg.Go(func() error {
+			return l.Start()
+		})
+	}
 
 	return eg.Wait()
 }

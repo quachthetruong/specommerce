@@ -15,6 +15,7 @@ type CreateOrderRequest struct {
 	CustomerID   string  `json:"customer_id"`
 	CustomerName string  `json:"customer_name"`
 	TotalAmount  float64 `json:"total_amount"`
+	TimeProcess  int64   `json:"time_process"` // Time in seconds to process the order
 }
 
 // 200 unique real customer names
@@ -92,12 +93,19 @@ func createOrder(client *http.Client, order CreateOrderRequest, wg *sync.WaitGro
 	req, _ := http.NewRequest("POST", orderServiceURL, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 
+	fmt.Printf("Sending order #%d for %s...\n", orderNum, order.CustomerID)
+	
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("Error creating order #%d for %s: %v\n", orderNum, order.CustomerID, err)
 		return
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		fmt.Printf("Failed order #%d for %s: %s\n", orderNum, order.CustomerID, resp.Status)
+		return
+	}
 
 	fmt.Printf("Order #%d - %d %s: $%.2f (waited %.1fs)\n", orderNum, resp.StatusCode, order.CustomerID, order.TotalAmount, sleepDuration.Seconds())
 }
@@ -116,7 +124,21 @@ func main() {
 	fmt.Printf("Running orders concurrently with 3-10 second random delays\n")
 	fmt.Println(strings.Repeat("=", 50))
 
-	client := &http.Client{Timeout: 30 * time.Second}
+	client := &http.Client{Timeout: 5 * time.Second}
+
+	// Test connection first
+	fmt.Println("Testing connection to order service...")
+	testReq, _ := http.NewRequest("POST", orderServiceURL, bytes.NewBuffer([]byte(`{"customer_id":"TEST","customer_name":"Test","total_amount":100,"time_process":0}`)))
+	testReq.Header.Set("Content-Type", "application/json")
+	testResp, err := client.Do(testReq)
+	if err != nil {
+		fmt.Printf("Cannot connect to order service: %v\n", err)
+		fmt.Println("Make sure the order service is running on http://localhost:8080")
+		return
+	}
+	testResp.Body.Close()
+	fmt.Printf("Connection test: %s\n", testResp.Status)
+	fmt.Println()
 
 	semaphore := make(chan struct{}, maxConcurrency)
 
@@ -127,6 +149,7 @@ func main() {
 		amount := 50.0 + rand.Float64()*149.0
 		belowTransactions = append(belowTransactions, CreateOrderRequest{
 			TotalAmount: float64(int(amount*100)) / 100,
+			TimeProcess: 0,
 		})
 	}
 
@@ -134,6 +157,7 @@ func main() {
 		amount := 200.0 + rand.Float64()*200.0
 		aboveTransactions = append(aboveTransactions, CreateOrderRequest{
 			TotalAmount: float64(int(amount*100)) / 100,
+			TimeProcess: 0,
 		})
 	}
 

@@ -13,7 +13,7 @@ type CreateOrderRequest struct {
 	CustomerId   string  `json:"customer_id" binding:"required"`
 	CustomerName string  `json:"customer_name" binding:"required"`
 	TotalAmount  float64 `json:"total_amount" binding:"required"`
-	TimeProcess  int64   `json:"time_process" binding:"required" default:"2"`
+	TimeProcess  int64   `json:"time_process" binding:"min=0" default:"2"`
 }
 
 // ToOrder converts CreateOrderRequest to domain Order
