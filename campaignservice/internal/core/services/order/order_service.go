@@ -47,16 +47,16 @@ func NewOrderService(orderRepo secondary.OrderRepository, campaignRepo secondary
 // This is Phase 1 of the campaign flow. See ProcessOrderResult for Phase 2.
 //
 // The function executes an atomic Lua script that:
-// 1. Validates order creation time is within campaign time window (start_time_micro to end_time_micro)
+// 1. Validates order creation time is within campaign time window (start_time_millisecond to end_time_millisecond)
 // 2. Early exits if campaign has reached maximum winners (policy_total_reward from campaign config)
 // 3. Stores transaction data with PENDING status in Redis (transactions:{order_id})
-// 4. Adds order to pending_orders sorted set with score = (created_at - start_time_micro)
+// 4. Adds order to pending_orders sorted set with score = (created_at - start_time_millisecond)
 //   - Score ensures chronological processing (earliest orders processed first)
 //   - Relative scoring from campaign start time for consistent ordering
 //
 // Orders added here will be processed when their status changes from PENDING to
 // SUCCESS/FAILED, maintaining order creation sequence for fair winner selection.
-// All time values use microsecond precision for accurate chronological ordering.
+// All time values use millisecond precision for accurate chronological ordering.
 func (s *service) ProcessPendingOrder(ctx context.Context, input order.Order) error {
 	errTemplate := "orderService ProcessPendingOrder %w"
 	luaScript := `
@@ -64,31 +64,33 @@ func (s *service) ProcessPendingOrder(ctx context.Context, input order.Order) er
 		local created_at = tonumber(ARGV[1])
 		local order_id = ARGV[2]
 		local campaign_key = ARGV[3]
-		local start_time_micro = tonumber(redis.call('HGET', campaign_key, 'start_time_micro'))
-		local end_time_micro = tonumber(redis.call('HGET', campaign_key, 'end_time_micro'))
+		local start_time_millisecond = tonumber(redis.call('HGET', campaign_key, 'start_time_millisecond'))
+		local end_time_millisecond = tonumber(redis.call('HGET', campaign_key, 'end_time_millisecond'))
 		local policy_total_reward = tonumber(redis.call('HGET',campaign_key, 'policy_total_reward')) or 0
+		local is_campaign_finished = false
 
-		if created_at < start_time_micro or created_at > end_time_micro then
-			return 
+		if created_at < start_time_millisecond or created_at > end_time_millisecond then
+			return is_campaign_finished
 		end
 		
 		local winners_key = 'campaign_winners'
 		local winner_count = redis.call('SCARD', winners_key)
 
 		if winner_count == policy_total_reward then
-			return 
+			is_campaign_finished = true
+			return is_campaign_finished
 		end
 
 		local transaction_key = 'transactions:' .. order_id
 		redis.call('HMSET', transaction_key, 'customer_id', customer_id, 'status', 'PENDING')
 		
 		local pending_orders_key = 'pending_orders'
-		local score = created_at - start_time_micro
+		local score = created_at - start_time_millisecond
 		redis.call('ZADD', pending_orders_key, score, order_id)
-		return 
+		return is_campaign_finished
 	`
 
-	createdAt := input.CreatedAt.UnixMicro()
+	createdAt := input.CreatedAt.UnixMilli()
 	campaignKey := fmt.Sprintf("campaign:%s", s.config.IphoneCampaign)
 	_, err := s.cacheClient.Eval(ctx, luaScript, []string{input.CustomerId}, createdAt, input.Id.String(), campaignKey)
 	if err != nil {

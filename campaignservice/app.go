@@ -49,7 +49,7 @@ func Run(logger *slog.Logger, tasks *shutdown.Tasks) error {
 	orderListener := do.MustInvoke[*orderConsumer.OrderConsumer](injector)
 	successOrderListener := do.MustInvoke[*orderConsumer.SuccessOrderConsumer](injector)
 
-	listeners := []messagequeue.EventListener{orderListener, successOrderListener}
+	listeners := []messagequeue.EventListener{successOrderListener, orderListener}
 	for _, l := range listeners {
 		eg.Go(func() error {
 			return l.Start()

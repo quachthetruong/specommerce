@@ -80,21 +80,18 @@ const (
 	totalOrders     = 500
 	ordersBelow200  = 400 // Orders less than $200
 	orders200to400  = 100 // Orders from $200 to $400
-	maxConcurrency  = 50  // Maximum concurrent requests
+	maxConcurrency  = 20  // Maximum concurrent requests
 )
 
 func createOrder(client *http.Client, order CreateOrderRequest, wg *sync.WaitGroup, orderNum int) {
 	defer wg.Done()
-
-	sleepDuration := time.Duration(2000+rand.Intn(8000)) * time.Millisecond
-	time.Sleep(sleepDuration)
 
 	jsonData, _ := json.Marshal(order)
 	req, _ := http.NewRequest("POST", orderServiceURL, bytes.NewBuffer(jsonData))
 	req.Header.Set("Content-Type", "application/json")
 
 	fmt.Printf("Sending order #%d for %s...\n", orderNum, order.CustomerID)
-	
+
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("Error creating order #%d for %s: %v\n", orderNum, order.CustomerID, err)
@@ -107,7 +104,7 @@ func createOrder(client *http.Client, order CreateOrderRequest, wg *sync.WaitGro
 		return
 	}
 
-	fmt.Printf("Order #%d - %d %s: $%.2f (waited %.1fs)\n", orderNum, resp.StatusCode, order.CustomerID, order.TotalAmount, sleepDuration.Seconds())
+	fmt.Printf("Order #%d - %d %s: $%.2f (TimeProcess: %d μs)\n", orderNum, resp.StatusCode, order.CustomerID, order.TotalAmount, order.TimeProcess)
 }
 
 // Step 1: Create two separate lists of transactions with proper ratios
@@ -121,10 +118,10 @@ func main() {
 	fmt.Println("Simple Order Mock Generator")
 	fmt.Printf("Target: %d orders (%d < $200, %d $200-$400)\n", totalOrders, ordersBelow200, orders200to400)
 	fmt.Printf("Using %d unique customers\n", len(customers))
-	fmt.Printf("Running orders concurrently with 3-10 second random delays\n")
+	fmt.Printf("Running orders concurrently with random TimeProcess (2-10 seconds in microseconds)\n")
 	fmt.Println(strings.Repeat("=", 50))
 
-	client := &http.Client{Timeout: 5 * time.Second}
+	client := &http.Client{Timeout: 30 * time.Second}
 
 	// Test connection first
 	fmt.Println("Testing connection to order service...")
@@ -147,17 +144,19 @@ func main() {
 
 	for i := 0; i < ordersBelow200; i++ {
 		amount := 50.0 + rand.Float64()*149.0
+		timeProcess := rand.Intn(8000) + 2000 // Random 2-10 seconds in milliseconds
 		belowTransactions = append(belowTransactions, CreateOrderRequest{
 			TotalAmount: float64(int(amount*100)) / 100,
-			TimeProcess: 0,
+			TimeProcess: int64(timeProcess),
 		})
 	}
 
 	for i := 0; i < orders200to400; i++ {
 		amount := 200.0 + rand.Float64()*200.0
+		timeProcess := rand.Intn(8000) + 2000 // Random 2-10 seconds in milliseconds
 		aboveTransactions = append(aboveTransactions, CreateOrderRequest{
 			TotalAmount: float64(int(amount*100)) / 100,
-			TimeProcess: 0,
+			TimeProcess: int64(timeProcess),
 		})
 	}
 

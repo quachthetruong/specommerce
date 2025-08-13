@@ -50,7 +50,7 @@ func (c *ProcessPaymentRequestConsumer) handleEvent(message kafka.Message) error
 		return fmt.Errorf(errorTemplate, err)
 	}
 	ctx := context.Background()
-	time.Sleep(time.Duration(request.TimeProcess) * time.Second)
+	time.Sleep(time.Duration(request.TimeProcess) * time.Millisecond)
 	orderId, err := xid.FromString(request.OrderId)
 	if err != nil {
 		return fmt.Errorf(errorTemplate, fmt.Errorf("invalid order ID: %w", err))

@@ -50,10 +50,10 @@ func (s *campaignService) CreateCampaign(ctx context.Context, input campaign.Cam
 		local total_reward = ARGV[5]
 		local min_order_amount = ARGV[6]
 		local max_tracked_orders = ARGV[7]
-		local start_time_micro = ARGV[8]
-		local end_time_micro = ARGV[9]
-		local created_at_micro = ARGV[10]
-		local updated_at_micro = ARGV[11]
+		local start_time_millisecond = ARGV[8]
+		local end_time_millisecond = ARGV[9]
+		local created_at = ARGV[10]
+		local updated_at = ARGV[11]
 		
 		return redis.call('HMSET', key,
 			'id', id,
@@ -63,10 +63,10 @@ func (s *campaignService) CreateCampaign(ctx context.Context, input campaign.Cam
 			'policy_total_reward', total_reward,
 			'policy_min_order_amount', min_order_amount,
 			'policy_max_tracked_orders', max_tracked_orders,
-			'start_time_micro', start_time_micro,
-			'end_time_micro', end_time_micro,
-			'created_at_micro', created_at_micro,
-			'updated_at_micro', updated_at_micro
+			'start_time_millisecond', start_time_millisecond,
+			'end_time_millisecond', end_time_millisecond,
+			'created_at', created_at,
+			'updated_at', updated_at
 		)
 	`
 
@@ -85,10 +85,10 @@ func (s *campaignService) CreateCampaign(ctx context.Context, input campaign.Cam
 		totalReward,
 		minOrderAmount,
 		maxTrackedOrders,
-		strconv.FormatInt(savedCampaign.StartTime.UnixMicro(), 10),
-		strconv.FormatInt(savedCampaign.EndTime.UnixMicro(), 10),
-		strconv.FormatInt(savedCampaign.CreatedAt.UnixMicro(), 10),
-		strconv.FormatInt(savedCampaign.UpdatedAt.UnixMicro(), 10),
+		strconv.FormatInt(savedCampaign.StartTime.UnixMilli(), 10),
+		strconv.FormatInt(savedCampaign.EndTime.UnixMilli(), 10),
+		strconv.FormatInt(savedCampaign.CreatedAt.UnixMilli(), 10),
+		strconv.FormatInt(savedCampaign.UpdatedAt.UnixMilli(), 10),
 	)
 	if err != nil {
 		// Log error but don't fail the campaign creation
@@ -124,10 +124,10 @@ func (s *campaignService) UpdateIphoneCampaign(ctx context.Context, input campai
 		local total_reward = ARGV[5]
 		local min_order_amount = ARGV[6]
 		local max_tracked_orders = ARGV[7]
-		local start_time_micro = ARGV[8]
-		local end_time_micro = ARGV[9]
-		local created_at_micro = ARGV[10]
-		local updated_at_micro = ARGV[11]
+		local start_time_millisecond = ARGV[8]
+		local end_time_millisecond = ARGV[9]
+		local created_at = ARGV[10]
+		local updated_at = ARGV[11]
 		
 		return redis.call('HMSET', key,
 			'id', id,
@@ -137,32 +137,32 @@ func (s *campaignService) UpdateIphoneCampaign(ctx context.Context, input campai
 			'policy_total_reward', total_reward,
 			'policy_min_order_amount', min_order_amount,
 			'policy_max_tracked_orders', max_tracked_orders,
-			'start_time_micro', start_time_micro,
-			'end_time_micro', end_time_micro,
-			'created_at_micro', created_at_micro,
-			'updated_at_micro', updated_at_micro
+			'start_time_millisecond', start_time_millisecond,
+			'end_time_millisecond', end_time_millisecond,
+			'created_at', created_at,
+			'updated_at', updated_at
 		)
 	`
-	
+
 	campaignKey := fmt.Sprintf("campaign:%s", s.config.IphoneCampaign)
-	
+
 	// Extract policy fields from the map
 	totalReward := fmt.Sprintf("%.0f", updatedCampaign.Policy["total_reward"])
 	minOrderAmount := fmt.Sprintf("%.0f", updatedCampaign.Policy["min_order_amount"])
 	maxTrackedOrders := fmt.Sprintf("%.0f", updatedCampaign.Policy["max_tracked_orders"])
-	
-	_, err = s.cacheClient.Eval(ctx, luaScript, []string{campaignKey}, 
+
+	_, err = s.cacheClient.Eval(ctx, luaScript, []string{campaignKey},
 		strconv.FormatInt(updatedCampaign.Id, 10),
 		updatedCampaign.Name,
-		updatedCampaign.Type, 
+		updatedCampaign.Type,
 		updatedCampaign.Description,
 		totalReward,
 		minOrderAmount,
 		maxTrackedOrders,
-		strconv.FormatInt(updatedCampaign.StartTime.UnixMicro(), 10),
-		strconv.FormatInt(updatedCampaign.EndTime.UnixMicro(), 10),
-		strconv.FormatInt(updatedCampaign.CreatedAt.UnixMicro(), 10),
-		strconv.FormatInt(updatedCampaign.UpdatedAt.UnixMicro(), 10),
+		strconv.FormatInt(updatedCampaign.StartTime.UnixMilli(), 10),
+		strconv.FormatInt(updatedCampaign.EndTime.UnixMilli(), 10),
+		strconv.FormatInt(updatedCampaign.CreatedAt.UnixMilli(), 10),
+		strconv.FormatInt(updatedCampaign.UpdatedAt.UnixMilli(), 10),
 	)
 	if err != nil {
 		// Log error but don't fail the campaign update
